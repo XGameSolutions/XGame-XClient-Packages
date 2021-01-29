@@ -1,0 +1,10 @@
+{
+  "name": "com.monitor1394.tian-glyph",
+  "displayName": "XTianGlyph Editor",
+  "description": "A template for quickly creating a tian glyph panel for the Unity Editor",
+  "version": "1.0.0",
+  "unity": "2018.3",
+  "dependencies": {},
+  "relatedPackages": {
+  }
+}
