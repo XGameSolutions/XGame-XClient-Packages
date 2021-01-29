@@ -1,0 +1,17 @@
+{
+    "name": "XBuild.Editor",
+    "references": [
+        "GUID:2317161fb758b4f5da1f142abb16af62"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

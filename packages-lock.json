@@ -1,6 +1,14 @@
 {
   "dependencies": {
-    "com.monitor1394.tian-glyph": {
+    "com.monitor1394.xbuild": {
+      "version": "file:XBuild",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.monitor1394.xtianglyph": "1.0.0"
+      }
+    },
+    "com.monitor1394.xtianglyph": {
       "version": "file:XTianGlyph",
       "depth": 0,
       "source": "embedded",

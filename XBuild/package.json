@@ -1,0 +1,11 @@
+{
+  "name": "com.monitor1394.xbuild",
+  "displayName": "XBuild",
+  "description": "A Build and AB System for Unity",
+  "version": "1.0.0",
+  "unity": "2018.3",
+  "dependencies": {
+    "com.monitor1394.xtianglyph": "1.0.0"
+  },
+  "relatedPackages": {}
+}

@@ -22,7 +22,7 @@ namespace XTianGlyph.Tests
     {
         TianGlyphPanel m_Panel;
 
-        [MenuItem("TianGlyph/TianGlyphTestWindow")]
+        [MenuItem("XTianGlyph/TianGlyphTestWindow")]
         static void ShowWindow()
         {
             var window = GetWindow<TianGlyphTestWindow>();
