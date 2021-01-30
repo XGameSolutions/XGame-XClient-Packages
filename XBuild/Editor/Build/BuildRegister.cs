@@ -10,7 +10,7 @@ using UnityEditor.SceneManagement;
 
 namespace XBuild
 {
-    public static class BuildCallback
+    public static class BuildRegister
     {
         private static Action<BuildParams> s_OnBeforeBuildAB;
         private static Action<BuildParams> s_OnAfterBuildAB;

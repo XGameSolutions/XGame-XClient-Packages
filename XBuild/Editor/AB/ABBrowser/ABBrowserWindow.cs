@@ -37,17 +37,9 @@ namespace XBuild.AB.ABBrowser
         [SerializeField] private int m_SelectedPlatformIndex;
         [SerializeField] private int m_SelectedSearchIndex;
 
-        [SerializeField] TreeViewState m_LTTreeListState;
-        [SerializeField] TreeViewState m_LBTreeListState;
-        [SerializeField] TreeViewState m_RTTreeListState;
-
-        [SerializeField] MultiColumnHeaderState m_LTTreeListMCHState;
-        [SerializeField] MultiColumnHeaderState m_LBTreeListMCHState;
-        [SerializeField] MultiColumnHeaderState m_RTTreeListMCHState;
-
-        private ABListTree m_ABTree;
-        private ABListTree m_ABDepTree;
-        private AssetListTree m_AssetTree;
+        private EditorTable m_ABTree;
+        private EditorTable m_ABDepTree;
+        private EditorTable m_AssetTree;
         private MessageListPanel m_MessagePanel;
         const float k_ToolbarPadding = 15;
         const float k_MenubarPadding = 46.5f;
@@ -69,20 +61,9 @@ namespace XBuild.AB.ABBrowser
             Instance.Show();
         }
 
-        public void SelectedABList(List<ABInfo> infoList, bool isDep)
-        {
-            ABDatabase.RefreshAssets(infoList);
-            if (!isDep)
-            {
-                m_AssetTree.UpdateInfoList(null);
-                m_ABDepTree.UpdateInfoList(ABDatabase.GetABDepInfoList(infoList));
-            }
-        }
 
-        public void SelectedAssetsList(List<ABAssetsInfo> assetsList)
-        {
-            m_MessagePanel.SetSelectedAssets(assetsList);
-        }
+
+
 
         private void OnEnable()
         {
@@ -228,58 +209,82 @@ namespace XBuild.AB.ABBrowser
 
         private void InitPanelTree()
         {
-            if (m_ABTree == null)
-            {
-                if (m_LTTreeListState == null)
-                    m_LTTreeListState = new TreeViewState();
-
-                var headerState = ABListTree.CreateDefaultMultiColumnHeaderState();
-                if (MultiColumnHeaderState.CanOverwriteSerializedFields(m_LTTreeListMCHState, headerState))
-                    MultiColumnHeaderState.OverwriteSerializedFields(m_LTTreeListMCHState, headerState);
-                m_LTTreeListMCHState = headerState;
-                m_ABTree = new ABListTree(m_LTTreeListState, m_LTTreeListMCHState, false);
-                m_Panel.LTOutline = false;
-                m_Panel.LTPanel = m_ABTree;
-                m_Panel.LTPanel.Reload();
-            }
-            if (m_ABDepTree == null)
-            {
-                if (m_LBTreeListState == null)
-                    m_LBTreeListState = new TreeViewState();
-
-                var headerState = ABListTree.CreateDefaultMultiColumnHeaderState();
-                if (MultiColumnHeaderState.CanOverwriteSerializedFields(m_LBTreeListMCHState, headerState))
-                    MultiColumnHeaderState.OverwriteSerializedFields(m_LBTreeListMCHState, headerState);
-                m_LBTreeListMCHState = headerState;
-
-                m_ABDepTree = new ABListTree(m_LBTreeListState, m_LBTreeListMCHState, true);
-                m_Panel.LBOutline = false;
-                m_Panel.LBPanel = m_ABDepTree;
-                m_Panel.LBPanel.Reload();
-            }
-
-            if (m_Panel.RTPanel == null)
-            {
-                if (m_RTTreeListState == null)
-                    m_RTTreeListState = new TreeViewState();
-
-                var headerState = AssetListTree.CreateDefaultMultiColumnHeaderState();
-                if (MultiColumnHeaderState.CanOverwriteSerializedFields(m_RTTreeListMCHState, headerState))
-                    MultiColumnHeaderState.OverwriteSerializedFields(m_RTTreeListMCHState, headerState);
-                m_RTTreeListMCHState = headerState;
-
-                m_AssetTree = new AssetListTree(m_RTTreeListState, m_RTTreeListMCHState);
-                m_Panel.RTOutline = false;
-                m_Panel.RTPanel = m_AssetTree;
-                m_Panel.RTPanel.Reload();
-            }
-            if (m_Panel.RBPanel == null)
+            InitABTable();
+            InitABDepTable();
+            InitAssetsTable();
+            if (m_MessagePanel == null)
             {
                 m_MessagePanel = new MessageListPanel();
                 m_Panel.RBPanel = m_MessagePanel;
                 m_Panel.RBOutline = true;
                 m_Panel.RBPanel.Reload();
             }
+        }
+
+        private void InitABTable()
+        {
+            if (m_ABTree != null) return;
+            var column = ABInfo.totalColumn;
+            m_ABTree = EditorTable.CreateTable(column);
+            for (int i = 0; i < column; i++)
+            {
+                m_ABTree.SetColumnHeader(i, ABInfo.GetColumnHeader(i));
+            }
+            m_ABTree.OnSelectionChanged = OnSelectedABList;
+            m_Panel.LTOutline = false;
+            m_Panel.LTPanel = m_ABTree;
+            m_Panel.LTPanel.Reload();
+        }
+
+        private void InitABDepTable()
+        {
+            if (m_ABDepTree != null) return;
+            var column = ABInfo.totalColumn;
+            m_ABDepTree = EditorTable.CreateTable(column);
+            for (int i = 0; i < column; i++)
+            {
+                m_ABDepTree.SetColumnHeader(i, ABInfo.GetColumnHeader(i));
+            }
+            m_ABDepTree.OnSelectionChanged = OnSelectedABDepList;
+            m_Panel.LBOutline = false;
+            m_Panel.LBPanel = m_ABDepTree;
+            m_Panel.LBPanel.Reload();
+        }
+
+        private void InitAssetsTable()
+        {
+            if (m_AssetTree != null) return;
+            var column = ABAssetsInfo.totalColumn;
+            m_AssetTree = EditorTable.CreateTable(column);
+            for (int i = 0; i < column; i++)
+            {
+                m_AssetTree.SetColumnHeader(i, ABAssetsInfo.GetColumnHeader(i));
+            }
+            m_AssetTree.OnSelectionChanged = OnSelectedAssetsList;
+            m_Panel.RTOutline = false;
+            m_Panel.RTPanel = m_AssetTree;
+            m_Panel.RTPanel.Reload();
+        }
+
+        private void OnSelectedABList(List<IEditorTableItemInfo> infoList)
+        {
+            var list = infoList.ConvertAll<ABInfo>(info => info as ABInfo);
+            ABDatabase.RefreshAssets(list);
+            m_AssetTree.UpdateInfoList(null);
+            m_ABDepTree.UpdateInfoList(ABDatabase.GetABDepInfoList(list));
+        }
+
+        private void OnSelectedABDepList(List<IEditorTableItemInfo> infoList)
+        {
+            var list = infoList.ConvertAll<ABInfo>(info => info as ABInfo);
+            ABDatabase.RefreshAssets(list);
+            m_AssetTree.UpdateInfoList(null);
+        }
+
+        private void OnSelectedAssetsList(List<IEditorTableItemInfo> assetsList)
+        {
+            var list = assetsList.ConvertAll<ABAssetsInfo>(info => info as ABAssetsInfo);
+            m_MessagePanel.SetSelectedAssets(list);
         }
 
         private Rect GetPanelArea()

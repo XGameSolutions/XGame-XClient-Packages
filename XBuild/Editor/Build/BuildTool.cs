@@ -120,9 +120,9 @@ namespace XBuild
 
         private static void BuildPackage(BuildParams param)
         {
-            BuildCallback.OnBeforeBuildPackage(param);
+            BuildRegister.OnBeforeBuildPackage(param);
             var flag = BuildPlayer(param);
-            BuildCallback.OnAfterBuildPackage(param, flag);
+            BuildRegister.OnAfterBuildPackage(param, flag);
             if (flag)
             {
                 BuildXCodeProject(param);

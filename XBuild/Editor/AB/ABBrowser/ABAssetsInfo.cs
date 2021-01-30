@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using XTianGlyph;
 
 namespace XBuild.AB.ABBrowser
 {
-    public class ABAssetsInfo : AssetsInfo
+    public class ABAssetsInfo : AssetsInfo, IEditorTableItemInfo
     {
         internal static Color k_LightGrey = Color.grey * 1.5f;
         private MessageSystem.MessageState m_AssetMessages = new MessageSystem.MessageState();
@@ -43,6 +45,59 @@ namespace XBuild.AB.ABBrowser
                 return k_LightGrey;
             else
                 return Color.white;
+        }
+
+
+        public string displayName { get { return name; } }
+        public int itemId { get { return path.GetHashCode(); } }
+        public string assetPath { get { return path; } }
+
+        public static int totalColumn { get { return 8; } }
+        public static MultiColumnHeaderState.Column GetColumnHeader(int column)
+        {
+            switch (column)
+            {
+                case 0: return TianGlyphUtil.GetColumn(200, 100, 500, "Asset", "");
+                case 1: return TianGlyphUtil.GetColumn(50, 10, 50, "Ext", "");
+                case 2: return TianGlyphUtil.GetColumn(200, 100, 400, "AB", "");
+                case 3: return TianGlyphUtil.GetColumn(30, 20, 50, "Ref", "");
+                case 4: return TianGlyphUtil.GetColumn(60, 20, 100, "Size", "");
+                case 5: return TianGlyphUtil.GetColumn(50, 20, 100, "Width", "");
+                case 6: return TianGlyphUtil.GetColumn(50, 20, 100, "Height", "");
+                case 7: return TianGlyphUtil.GetColumn(60, 20, 100, "MaxSize", "");
+                default: return TianGlyphUtil.GetColumn(100, 50, 400, "Unknow", "");
+            }
+        }
+
+        public string GetColumnString(int column)
+        {
+            switch (column)
+            {
+                case 0: return name;
+                case 1: return extension;
+                case 2: return GetABNameString();
+                case 3: return refCount.ToString();
+                case 4: return GetSizeString();
+                case 5: return GetWidthString();
+                case 6: return GetHeightString();
+                case 7: return GetMaxSizeString();
+                default: return "unkown:" + column;
+            }
+        }
+        public object GetColumnOrder(int column)
+        {
+            switch (column)
+            {
+                case 0: return name;
+                case 1: return extension;
+                case 2: return abName;
+                case 3: return refCount;
+                case 4: return size;
+                case 5: return textureWidth;
+                case 6: return textureHeight;
+                case 7: return textureMaxSize;
+                default: return name;
+            }
         }
 
         internal bool IsMessageSet(MessageSystem.MessageFlag flag)
@@ -87,16 +142,28 @@ namespace XBuild.AB.ABBrowser
                 // messages.Add(new MessageSystem.Message(message, MessageType.Warning));
             }
 
-            if (String.IsNullOrEmpty(abName) && refCount > 0)
+            if (refCount > 0)
             {
-                //TODO - refine the parent list to only include those in the current asset list
-                var message = name + "\n" + "Is auto included in bundle(s) due to parent(s): \n";
-                foreach (var parent in m_RefABList)
+                if (String.IsNullOrEmpty(abName))
                 {
-                    message += parent + ", ";
+                    var message = name + "\n" + "Is auto included in bundle(s) due to parent(s): \n";
+                    foreach (var parent in m_RefABList)
+                    {
+                        message += "  " + parent + "\n";
+                    }
+                    message = message.Substring(0, message.Length - 1);
+                    messages.Add(new MessageSystem.Message(message, MessageType.Warning));
                 }
-                message = message.Substring(0, message.Length - 2);//remove trailing comma.
-                messages.Add(new MessageSystem.Message(message, MessageType.Info));
+                else if (refCount > 1)
+                {
+                    var message = name + "\n" + "Is ref by parent(s): \n";
+                    foreach (var parent in m_RefABList)
+                    {
+                        message += "  " + parent + "\n";
+                    }
+                    message = message.Substring(0, message.Length - 1);
+                    messages.Add(new MessageSystem.Message(message, MessageType.Info));
+                }
             }
             messages.Add(new MessageSystem.Message(name + "\n" + "Path: " + path, MessageType.Info));
             return messages;
