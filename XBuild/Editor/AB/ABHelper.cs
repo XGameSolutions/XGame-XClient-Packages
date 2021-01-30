@@ -52,8 +52,9 @@ namespace XBuild.AB
                 var abName = kv.Key;
                 foreach (var depPath in kv.Value)
                 {
+                    var extension = Path.GetExtension(depPath).ToLower();
                     var category = ABConfig.GetDepCategory(depPath);
-                    var type = ABConfig.GetAssetType(depPath);
+                    var type = ABConfig.GetAssetType(extension);
                     if (!ABConfig.IsValidDep(category, type)) continue;
                     if (!infoDic.ContainsKey(depPath))
                     {
@@ -63,7 +64,7 @@ namespace XBuild.AB
                             category = category,
                             type = type,
                             name = Path.GetFileNameWithoutExtension(depPath),
-                            extension = Path.GetExtension(depPath).ToLower(),
+                            extension = extension,
                             abName = GetABName(depPath),
                             size = 0,
                         };

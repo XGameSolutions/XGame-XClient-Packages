@@ -228,11 +228,13 @@ namespace XBuild.AB.ABBrowser
         private static void InitAsset(WaitingAssetsInfo waitInfo)
         {
             var path = waitInfo.path;
-            if (ABConfig.IsScript(path)) return;
+            var extension = Path.GetExtension(path).ToLower();
+            if (ABConfig.IsScript(extension)) return;
             ABAssetsInfo info = null;
             if (!s_AssetInfoDic.ContainsKey(path))
             {
-                var assetType = ABConfig.GetAssetType(path);
+
+                var assetType = ABConfig.GetAssetType(extension);
                 var width = 0;
                 var height = 0;
                 if (assetType == AssetsType.Texture)
@@ -243,7 +245,7 @@ namespace XBuild.AB.ABBrowser
                 {
                     type = assetType,
                     name = Path.GetFileNameWithoutExtension(path),
-                    extension = Path.GetExtension(path).ToLower(),
+                    extension = extension,
                     path = path,
                     abName = ABHelper.GetABName(path),
                     textureWidth = width,

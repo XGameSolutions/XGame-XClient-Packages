@@ -53,14 +53,13 @@ namespace XBuild.AB
         public string res_dir_ui = "Assets/ResUI";
         public string res_dir_ui_big_image = "Assets/ResUI/big_image";
 
-        public string[] file_suffix_material = new string[] { ".mat", ".MAT" };
-        public string[] file_suffix_prefab = new string[] { ".prefab", ".PREFAB", ".fbx", ".FBX", ".obj", ".OBJ" };
+        public string[] file_suffix_material = new string[] { ".mat" };
+        public string[] file_suffix_prefab = new string[] { ".prefab", ".fbx", ".obj" };
         public string[] file_suffix_script = new string[] { ".cs" };
-        public string[] file_suffix_shader = new string[] { ".shader", ".SHADER" };
-        public string[] file_suffix_asset = new string[] { ".asset", ".ASSET" };
-        public string[] file_suffix_texture = new string[] { ".tga", ".TAG", ".png", ".PNG", ".psd", ".PSD", ".tif",
-            ".TIF", ".tiff", ".TIFF",".dds",".DDS",".jpeg",".JPEG",".jpg",".JPG",".gif",".GIF",".bmp",".BMP",".exr",
-            ".EXR",".hdr",".HDR"};
+        public string[] file_suffix_shader = new string[] { ".shader" };
+        public string[] file_suffix_asset = new string[] { ".asset" };
+        public string[] file_suffix_texture = new string[] { ".tga", ".png", ".psd", ".tif",
+            ".tiff", ".dds", ".jpeg", ".jpg", ".gif", ".bmp", ".exr", ".hdr"};
 
         public float ab_dep_single_size_limit_material = 0.2f * 1024 * 1024;
         public float ab_dep_single_size_limit_model = 1f * 1024 * 1024;
@@ -106,13 +105,13 @@ namespace XBuild.AB
             else return AssetsCategory.Other;
         }
 
-        public static AssetsType GetAssetType(string path)
+        public static AssetsType GetAssetType(string extention)
         {
-            if (IsShader(path)) return AssetsType.Shader;
-            else if (IsMaterial(path)) return AssetsType.Material;
-            else if (IsTexture(path)) return AssetsType.Texture;
-            else if (IsPrefab(path)) return AssetsType.Prefab;
-            else if (IsAsset(path)) return AssetsType.Asset;
+            if (IsShader(extention)) return AssetsType.Shader;
+            else if (IsMaterial(extention)) return AssetsType.Material;
+            else if (IsTexture(extention)) return AssetsType.Texture;
+            else if (IsPrefab(extention)) return AssetsType.Prefab;
+            else if (IsAsset(extention)) return AssetsType.Asset;
             else return AssetsType.Other;
         }
 
@@ -136,51 +135,51 @@ namespace XBuild.AB
             return path.StartsWith(Instance.res_dir_ui_big_image);
         }
 
-        public static bool IsMaterial(string path)
+        public static bool IsMaterial(string extention)
         {
             foreach (var suffix in Instance.file_suffix_material)
             {
-                if (path.EndsWith(suffix)) return true;
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
         }
-        public static bool IsPrefab(string path)
+        public static bool IsPrefab(string extention)
         {
             foreach (var suffix in Instance.file_suffix_prefab)
             {
-                if (path.EndsWith(suffix)) return true;
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
         }
-        public static bool IsScript(string path)
+        public static bool IsScript(string extention)
         {
             foreach (var suffix in Instance.file_suffix_script)
             {
-                if (path.EndsWith(suffix)) return true;
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
         }
-        public static bool IsShader(string path)
+        public static bool IsShader(string extention)
         {
             foreach (var suffix in Instance.file_suffix_shader)
             {
-                if (path.EndsWith(suffix)) return true;
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
         }
-        public static bool IsAsset(string path)
+        public static bool IsAsset(string extention)
         {
             foreach (var suffix in Instance.file_suffix_asset)
             {
-                if (path.EndsWith(suffix)) return true;
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
         }
-        public static bool IsTexture(string path)
+        public static bool IsTexture(string extention)
         {
             foreach (var suffix in Instance.file_suffix_texture)
             {
-                if (path.EndsWith(suffix)) return true;
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
         }

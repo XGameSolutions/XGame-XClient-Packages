@@ -95,7 +95,6 @@ namespace XBuild.AB.ABBrowser
                 {
                     message += parent + ", ";
                 }
-                Debug.LogError("msg:"+message);
                 message = message.Substring(0, message.Length - 2);//remove trailing comma.
                 messages.Add(new MessageSystem.Message(message, MessageType.Info));
             }

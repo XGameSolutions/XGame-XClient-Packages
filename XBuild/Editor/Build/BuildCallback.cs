@@ -74,12 +74,12 @@ namespace XBuild
         /// </summary>
         internal static void OnBeforeBuildPackage(BuildParams buildParam)
         {
-            SceneTool.RefreshSettingList(true);
-            EditorSceneManager.OpenScene(buildParam.startScene);
             if (s_OnBeforeBuildPackage != null)
             {
                 s_OnBeforeBuildPackage(buildParam);
             }
+            SceneTool.RefreshSettingList(true);
+            EditorSceneManager.OpenScene(buildParam.startScene);
         }
 
         /// <summary>

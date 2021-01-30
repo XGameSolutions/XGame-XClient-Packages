@@ -198,12 +198,10 @@ namespace XBuild
             var target = proj.GetUnityMainTargetGuid();
 
             File.WriteAllText(projPath, proj.WriteToString());
-            //BuildHelper.RunBash("open -a Xcode " + xcodeprojPath);
             var askForBuildLocation = false;
-            // BuildHelper.RefectionInvoke(BuildHelper.EditorAssembly, "UnityEditor.BuildPlayerWindow",
-            //     "BuildPlayerAndRun", null, new Type[] { }, null);
+            EditorUserBuildSettings.selectedBuildTargetGroup = BuildTargetGroup.iOS;
             BuildHelper.RefectionInvoke(BuildHelper.EditorAssembly, "UnityEditor.BuildPlayerWindow",
-                "BuildPlayerAndRun", null, new Type[] { typeof(bool) }, new object[] { askForBuildLocation });
+               "BuildPlayerAndRun", null, new Type[] { typeof(bool) }, new object[] { askForBuildLocation });
 #endif
         }
     }

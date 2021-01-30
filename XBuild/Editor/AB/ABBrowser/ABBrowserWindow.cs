@@ -10,6 +10,10 @@ namespace XBuild.AB.ABBrowser
 {
     public class ABBrowserWindow : EditorWindow
     {
+        class Styles
+        {
+
+        }
         private static ABBrowserWindow s_Instance;
         internal static ABBrowserWindow Instance
         {
@@ -44,11 +48,11 @@ namespace XBuild.AB.ABBrowser
         const float k_MenubarPadding = 45.5f;
         const float kButtonWidth = 150;
 
-        private Texture2D m_RefreshTexture;
+        private GUIContent m_RefreshTexture;
         private Texture2D m_AndroidTexture;
         private Texture2D m_IOSTexture;
         private Texture2D m_StandaloneTexture;
-        private Texture2D[] m_PlatformTextures;
+        private GUIContent[] m_PlatformTextures;
         private SearchField m_SearchField;
 
 
@@ -85,11 +89,15 @@ namespace XBuild.AB.ABBrowser
             }
             m_Panel.RTOffset = 16.5f;
             m_Panel.LBOffset = 0f;
-            m_RefreshTexture = EditorGUIUtility.FindTexture("Refresh");
+            m_RefreshTexture =new GUIContent(EditorGUIUtility.FindTexture("Refresh"),"Refresh AB list");
             m_StandaloneTexture = EditorGUIUtility.FindTexture("BuildSettings.Standalone");
             m_IOSTexture = EditorGUIUtility.FindTexture("BuildSettings.iPhone");
             m_AndroidTexture = EditorGUIUtility.FindTexture("BuildSettings.Android");
-            m_PlatformTextures = new Texture2D[] { m_StandaloneTexture, m_IOSTexture, m_AndroidTexture };
+            m_PlatformTextures = new GUIContent[] {
+                new GUIContent(m_StandaloneTexture,"PC AB"),
+                new GUIContent(m_IOSTexture,"iOS AB"),
+                new GUIContent(m_AndroidTexture,"Android AB")
+            };
             m_SearchField = new SearchField();
         }
 

@@ -53,6 +53,7 @@ namespace XBuild
         {
             sb.Length = 0;
             sb.Append("BuildParams:\n");
+            sb.AppendFormat("target={0}\n", target);
             sb.AppendFormat("productName={0}\n", productName);
             sb.AppendFormat("version={0}\n", version);
             sb.AppendFormat("buildNumber={0}\n", buildNumber);
