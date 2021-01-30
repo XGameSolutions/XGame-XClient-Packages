@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace XTianGlyph.Tests
@@ -15,6 +16,17 @@ namespace XTianGlyph.Tests
         public int itemId { get { return test1.GetHashCode(); } }
         public string assetPath { get; set; }
 
+        public static int totalColumn { get { return 3; } }
+        public static MultiColumnHeaderState.Column GetColumnHeader(int column)
+        {
+            switch (column)
+            {
+                case 0: return TianGlyphUtil.GetColumn(100, 50, 200, "Test1", "This is a test");
+                case 1: return TianGlyphUtil.GetColumn(100, 50, 200, "Test2", "This is a test");
+                case 2: return TianGlyphUtil.GetColumn(100, 50, 200, "Test3", "This is a test");
+                default: return TianGlyphUtil.GetColumn(100, 50, 200, "Unknow", "");
+            }
+        }
         public string GetColumnString(int column)
         {
             switch (column)
@@ -98,11 +110,12 @@ namespace XTianGlyph.Tests
             }
             if (m_RTTable == null)
             {
-                var column = 3;
+                var column = TestInfo.totalColumn;
                 m_RTTable = EditorTable.CreateTable(column);
-                m_RTTable.SetHeader(0, 100, 50, 200, "Test1", "This is a test");
-                m_RTTable.SetHeader(1, 100, 50, 200, "Test2", "This is a test");
-                m_RTTable.SetHeader(2, 100, 50, 200, "Test3", "This is a test");
+                for (int i = 0; i < column; i++)
+                {
+                    m_RTTable.SetColumnHeader(0, TestInfo.GetColumnHeader(i));
+                }
                 m_RTTable.OnSelectionChanged = SelectedInfo;
                 m_Panel.RTPanel = m_RTTable;
                 m_Panel.RTPanel.Reload();

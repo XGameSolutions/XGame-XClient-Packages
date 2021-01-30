@@ -50,27 +50,10 @@ namespace XTianGlyph
             return new MultiColumnHeaderState(m_Columns);
         }
 
-        public static void SetColumnInfo(MultiColumnHeaderState mchs, int column, float width, float minWidth, float maxWidth,
-            string name, string nameTip, bool canSort = true, bool autoResize = true,
-            TextAlignment headerTextAlignment = TextAlignment.Left)
-        {
-            if (column >= 0 && column < mchs.columns.Length)
-            {
-                var info = mchs.columns[column];
-                info.headerContent = new GUIContent(name, nameTip);
-                info.minWidth = minWidth;
-                info.width = width;
-                info.maxWidth = maxWidth;
-                info.headerTextAlignment = headerTextAlignment;
-                info.canSort = canSort;
-                info.autoResize = autoResize;
-            }
-        }
-
         private TreeViewItem m_RootItem;
         private System.Action<List<IEditorTableItemInfo>> m_OnSelectionChanged;
         private bool m_SelectedObjects;
-        
+
         public System.Action<List<IEditorTableItemInfo>> OnSelectionChanged { set { m_OnSelectionChanged = value; } }
 
         public EditorTable(TreeViewState state, MultiColumnHeaderState mchs) : base(state, new MultiColumnHeader(mchs))
@@ -82,15 +65,18 @@ namespace XTianGlyph
             m_RootItem.children = new List<TreeViewItem>();
         }
 
-        public void SetHeader(int column, float width, float minWidth, float maxWidth,
+        public void SetColumnHeader(int column, float width, float minWidth, float maxWidth,
             string name, string nameTip, bool canSort = true, bool autoResize = true,
             TextAlignment headerTextAlignment = TextAlignment.Left)
         {
-            SetColumnInfo(multiColumnHeader.state, column, width, minWidth, maxWidth, name, nameTip, canSort, autoResize,
+            TianGlyphUtil.SetColumn(multiColumnHeader.state, column, width, minWidth, maxWidth, name, nameTip, canSort, autoResize,
                 headerTextAlignment);
         }
 
-
+        public void SetColumnHeader(int column, MultiColumnHeaderState.Column info)
+        {
+            multiColumnHeader.state.columns[column] = info;
+        }
 
         public void UpdateSelection(IEnumerable<IEditorTableItemInfo> list)
         {
