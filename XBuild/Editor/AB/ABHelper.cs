@@ -116,7 +116,7 @@ namespace XBuild.AB
                 s_GetTextureStorageMemorySize = type.GetMethod("GetStorageMemorySize",
                     BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public);
             }
-            return (long)s_GetTextureStorageMemorySize.Invoke(null, new object[] { tex });
+            return (int)s_GetTextureStorageMemorySize.Invoke(null, new object[] { tex });
         }
 
         private static MethodInfo s_GetWidthAndHeight;
@@ -125,7 +125,7 @@ namespace XBuild.AB
             if (s_GetWidthAndHeight == null)
             {
                 s_GetWidthAndHeight = typeof(TextureImporter).GetMethod("GetWidthAndHeight",
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.NonPublic);
             }
             var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
             if (importer != null)
@@ -142,6 +142,38 @@ namespace XBuild.AB
                 height = 0;
                 return false;
             }
+        }
+
+        public static bool GetTextureMaxSize(BuildTarget target, string assetPath, out int maxSize)
+        {
+            var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            if (importer != null)
+            {
+                var defaultMaxSize = importer.GetDefaultPlatformTextureSettings().maxTextureSize;
+                TextureImporterFormat textureFormat;
+                int compressionQuality;
+                bool etc1AlphaSplitEnabled;
+                switch (target)
+                {
+                    case BuildTarget.StandaloneWindows64:
+                        importer.GetPlatformTextureSettings("Standalone", out maxSize, out textureFormat,
+                            out compressionQuality, out etc1AlphaSplitEnabled);
+                        return true;
+                    case BuildTarget.Android:
+                        importer.GetPlatformTextureSettings("Android", out maxSize, out textureFormat,
+                               out compressionQuality, out etc1AlphaSplitEnabled);
+                        return true;
+                    case BuildTarget.iOS:
+                        importer.GetPlatformTextureSettings("iPhone", out maxSize, out textureFormat,
+                               out compressionQuality, out etc1AlphaSplitEnabled);
+                        return true;
+                    default:
+                        maxSize = defaultMaxSize;
+                        break;
+                }
+            }
+            maxSize = 0;
+            return false;
         }
     }
 }

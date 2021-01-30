@@ -25,7 +25,7 @@ namespace XBuild
         public static void BuildWindowExe()
         {
             BuildLog.Log("BuildWindowExe ...");
-            InitBuildParams(BuildTarget.StandaloneWindows);
+            InitBuildParams(BuildTarget.StandaloneWindows64);
             BuildPackage(s_Param);
             BuildLog.Log("BuildWindowExe DONE!");
         }
@@ -33,7 +33,7 @@ namespace XBuild
         public static void BuildWindowAB()
         {
             BuildLog.Log("BuildWindowAB ...");
-            InitBuildParams(BuildTarget.StandaloneWindows);
+            InitBuildParams(BuildTarget.StandaloneWindows64);
             BuildAB(s_Param, true);
             BuildLog.Log("BuildWindowAB DONE!");
         }
@@ -41,7 +41,7 @@ namespace XBuild
         public static void BuildWindowABAndExe()
         {
             BuildLog.Log("BuildWindowABAndExe ...");
-            InitBuildParams(BuildTarget.StandaloneWindows);
+            InitBuildParams(BuildTarget.StandaloneWindows64);
             BuildAB(s_Param, false);
             BuildPackage(s_Param);
             BuildLog.Log("BuildWindowABAndExe DONE!");

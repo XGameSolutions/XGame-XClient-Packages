@@ -53,6 +53,9 @@ namespace XBuild.AB.ABBrowser
         private static List<ABInfo> s_CurrentABList = new List<ABInfo>();
         private static List<ABAssetsInfo> s_CurrentAssetsList = new List<ABAssetsInfo>();
 
+        public static string abSearchString;
+        public static string assetsSearchString;
+
         public static bool IsABDirty()
         {
             if (s_ABDirty)
@@ -91,7 +94,7 @@ namespace XBuild.AB.ABBrowser
         {
             var strPlatform = target.ToString();
             s_TargetPlatform = target;
-            s_ABDirPath = string.Format("{0}/../ResAB/{1}/", Application.dataPath, strPlatform);
+            s_ABDirPath = string.Format("{0}/{1}/", ABConfig.GetABDirPath(), strPlatform);
             if (!Directory.Exists(s_ABDirPath))
             {
                 Debug.LogError("can't find dir:" + s_ABDirPath);
@@ -143,11 +146,25 @@ namespace XBuild.AB.ABBrowser
         static List<ABInfo> s_TempABList = new List<ABInfo>();
         public static List<ABInfo> GetABInfoList(ABType type)
         {
-            if (type == ABType.All) return s_ABInfoDic.Values.ToList();
-            s_TempABList.Clear();
-            foreach (var kv in s_ABInfoDic)
+            if (string.IsNullOrEmpty(abSearchString))
             {
-                if (kv.Value.type == type) s_TempABList.Add(kv.Value);
+                if (type == ABType.All) return s_ABInfoDic.Values.ToList();
+                s_TempABList.Clear();
+                foreach (var kv in s_ABInfoDic)
+                {
+                    if (kv.Value.type == type) s_TempABList.Add(kv.Value);
+                }
+            }
+            else
+            {
+                s_TempABList.Clear();
+                foreach (var kv in s_ABInfoDic)
+                {
+                    if ((kv.Value.type == type || type == ABType.All) && kv.Value.name.Contains(abSearchString))
+                    {
+                        s_TempABList.Add(kv.Value);
+                    }
+                }
             }
             return s_TempABList;
         }
@@ -174,11 +191,25 @@ namespace XBuild.AB.ABBrowser
         static List<ABAssetsInfo> s_TempAssetList = new List<ABAssetsInfo>();
         public static List<ABAssetsInfo> GetAssetInfoList(AssetsType type)
         {
-            if (type == AssetsType.None) return s_CurrentAssetsList;
-            s_TempAssetList.Clear();
-            foreach (var info in s_CurrentAssetsList)
+            if (string.IsNullOrEmpty(assetsSearchString))
             {
-                if (info.type == type) s_TempAssetList.Add(info);
+                if (type == AssetsType.None) return s_CurrentAssetsList;
+                s_TempAssetList.Clear();
+                foreach (var info in s_CurrentAssetsList)
+                {
+                    if (info.type == type) s_TempAssetList.Add(info);
+                }
+            }
+            else
+            {
+                s_TempAssetList.Clear();
+                foreach (var info in s_CurrentAssetsList)
+                {
+                    if ((info.type == type || type == AssetsType.None) && info.name.Contains(assetsSearchString))
+                    {
+                        s_TempAssetList.Add(info);
+                    }
+                }
             }
             return s_TempAssetList;
         }
@@ -233,7 +264,6 @@ namespace XBuild.AB.ABBrowser
             ABAssetsInfo info = null;
             if (!s_AssetInfoDic.ContainsKey(path))
             {
-
                 var assetType = ABConfig.GetAssetType(extension);
                 var width = 0;
                 var height = 0;
@@ -258,6 +288,12 @@ namespace XBuild.AB.ABBrowser
                 info = s_AssetInfoDic[path];
             }
             info.size = ABHelper.GetAssetSize(path);
+            if (info.type == AssetsType.Texture)
+            {
+                var maxSize = 0;
+                ABHelper.GetTextureMaxSize(s_TargetPlatform, info.path, out maxSize);
+                info.textureMaxSize = maxSize;
+            }
             foreach (var ab in waitInfo.parents)
             {
                 info.AddRefAB(ab);

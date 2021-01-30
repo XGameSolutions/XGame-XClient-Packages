@@ -18,6 +18,7 @@ namespace XBuild.AB
         private static ABConfig s_Instance;
         public const string configName = "ABConfig";
         public const string configPath = "Assets/XBuild/Editor/Resources/ABConfig.asset";
+        public string AB_DIR = "../ResAB";
         public string dep = "_dep_";
         public string ab_prefix_shader = "shader";
         public string ab_prefix_model = "model_";
@@ -53,6 +54,11 @@ namespace XBuild.AB
         public string res_dir_ui = "Assets/ResUI";
         public string res_dir_ui_big_image = "Assets/ResUI/big_image";
 
+        public float ab_dep_single_size_limit_material = 0.2f * 1024 * 1024;
+        public float ab_dep_single_size_limit_model = 1f * 1024 * 1024;
+        public float ab_dep_single_size_limit_scene = 1f * 1024 * 1024;
+        public int common_dep_index_max = 5;
+
         public string[] file_suffix_material = new string[] { ".mat" };
         public string[] file_suffix_prefab = new string[] { ".prefab", ".fbx", ".obj" };
         public string[] file_suffix_script = new string[] { ".cs" };
@@ -60,11 +66,6 @@ namespace XBuild.AB
         public string[] file_suffix_asset = new string[] { ".asset" };
         public string[] file_suffix_texture = new string[] { ".tga", ".png", ".psd", ".tif",
             ".tiff", ".dds", ".jpeg", ".jpg", ".gif", ".bmp", ".exr", ".hdr"};
-
-        public float ab_dep_single_size_limit_material = 0.2f * 1024 * 1024;
-        public float ab_dep_single_size_limit_model = 1f * 1024 * 1024;
-        public float ab_dep_single_size_limit_scene = 1f * 1024 * 1024;
-        public int common_dep_index_max = 5;
 
         public static ABConfig Instance
         {
@@ -346,6 +347,13 @@ namespace XBuild.AB
         internal static string GetABNameWithDepSuffix(string abName)
         {
             return abName + Instance.dep;
+        }
+
+        internal static string GetABDirPath()
+        {
+            if (Instance.AB_DIR.StartsWith("/")) Instance.AB_DIR = Instance.AB_DIR.Substring(1);
+            if (Instance.AB_DIR.EndsWith("/")) Instance.AB_DIR = Instance.AB_DIR.Substring(0, Instance.AB_DIR.Length - 2);
+            return string.Format("{0}/{1}", Application.dataPath, Instance.AB_DIR);
         }
     }
 }

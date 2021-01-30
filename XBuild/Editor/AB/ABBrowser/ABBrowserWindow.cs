@@ -12,7 +12,10 @@ namespace XBuild.AB.ABBrowser
     {
         class Styles
         {
-
+            public static readonly GUIStyle btnInvisible = "InvisibleButton";
+            public static readonly GUIContent btnSearchAB = new GUIContent("AB", "search AB");
+            public static readonly GUIContent btnSearchAssets = new GUIContent("Assets", "search assets");
+            public static readonly GUIContent[] searchBtns = new GUIContent[] { btnSearchAB, btnSearchAssets };
         }
         private static ABBrowserWindow s_Instance;
         internal static ABBrowserWindow Instance
@@ -30,8 +33,10 @@ namespace XBuild.AB.ABBrowser
         [SerializeField] private TianGlyphPanel m_Panel;
         [SerializeField] private ABType m_SelectedABType;
         [SerializeField] private AssetsType m_SelectedAssetType;
-        [SerializeField] private BuildTarget m_SelectedPlatform = BuildTarget.StandaloneWindows;
+        [SerializeField] private BuildTarget m_SelectedPlatform = BuildTarget.StandaloneWindows64;
         [SerializeField] private int m_SelectedPlatformIndex;
+        [SerializeField] private int m_SelectedSearchIndex;
+
         [SerializeField] TreeViewState m_LTTreeListState;
         [SerializeField] TreeViewState m_LBTreeListState;
         [SerializeField] TreeViewState m_RTTreeListState;
@@ -45,7 +50,7 @@ namespace XBuild.AB.ABBrowser
         private AssetListTree m_AssetTree;
         private MessageListPanel m_MessagePanel;
         const float k_ToolbarPadding = 15;
-        const float k_MenubarPadding = 45.5f;
+        const float k_MenubarPadding = 46.5f;
         const float kButtonWidth = 150;
 
         private GUIContent m_RefreshTexture;
@@ -89,10 +94,10 @@ namespace XBuild.AB.ABBrowser
             }
             m_Panel.RTOffset = 16.5f;
             m_Panel.LBOffset = 0f;
-            m_RefreshTexture =new GUIContent(EditorGUIUtility.FindTexture("Refresh"),"Refresh AB list");
-            m_StandaloneTexture = EditorGUIUtility.FindTexture("BuildSettings.Standalone");
-            m_IOSTexture = EditorGUIUtility.FindTexture("BuildSettings.iPhone");
-            m_AndroidTexture = EditorGUIUtility.FindTexture("BuildSettings.Android");
+            m_RefreshTexture = new GUIContent(EditorGUIUtility.FindTexture("Refresh"), "Refresh AB list");
+            m_StandaloneTexture = EditorGUIUtility.FindTexture("BuildSettings.Standalone@2x");
+            m_IOSTexture = EditorGUIUtility.FindTexture("BuildSettings.iPhone@2x");
+            m_AndroidTexture = EditorGUIUtility.FindTexture("BuildSettings.Android@2x");
             m_PlatformTextures = new GUIContent[] {
                 new GUIContent(m_StandaloneTexture,"PC AB"),
                 new GUIContent(m_IOSTexture,"iOS AB"),
@@ -134,7 +139,7 @@ namespace XBuild.AB.ABBrowser
         private void GUIButton()
         {
             GUILayout.BeginHorizontal();
-            var btnHeight = 25f;
+            var btnHeight = 27f;
             var platform = GUILayout.SelectionGrid(m_SelectedPlatformIndex, m_PlatformTextures, 3,
                 GUILayout.Width(btnHeight * 3.3f), GUILayout.Height(btnHeight));
             if (platform != m_SelectedPlatformIndex)
@@ -142,7 +147,7 @@ namespace XBuild.AB.ABBrowser
                 m_SelectedPlatformIndex = platform;
                 switch (m_SelectedPlatformIndex)
                 {
-                    case 0: m_SelectedPlatform = BuildTarget.StandaloneWindows; break;
+                    case 0: m_SelectedPlatform = BuildTarget.StandaloneWindows64; break;
                     case 1: m_SelectedPlatform = BuildTarget.iOS; break;
                     case 2: m_SelectedPlatform = BuildTarget.Android; break;
                 }
@@ -174,10 +179,32 @@ namespace XBuild.AB.ABBrowser
 
         private void GUISearchAndAsset()
         {
-            var tabHeight = 34;
-            var rect = new Rect(m_Panel.LTRect.x, m_Panel.LTRect.y - 16.8f,
-                m_Panel.LTRect.width + 2 * m_Panel.SplitterWidth, tabHeight);
-            m_ABTree.searchString = m_SearchField.OnGUI(rect, m_ABTree.searchString);
+            var searchHeight = 16.8f;
+            var btnWidth = 98;
+            m_SelectedSearchIndex = GUILayout.SelectionGrid(m_SelectedSearchIndex, Styles.searchBtns, 2,
+                GUILayout.Width(btnWidth), GUILayout.Height(searchHeight - 2));
+            var rect = new Rect(m_Panel.LTRect.x + btnWidth, m_Panel.LTRect.y - searchHeight + 0.5f,
+                m_Panel.LTRect.width - btnWidth + 2 * m_Panel.SplitterWidth, searchHeight);
+            if (m_SelectedSearchIndex == 0)
+            {
+                var newSearch = m_SearchField.OnGUI(rect, ABDatabase.abSearchString);
+                if (ABDatabase.abSearchString != newSearch)
+                {
+                    ABDatabase.abSearchString = newSearch;
+                    m_ABTree.UpdateInfoList(ABDatabase.GetABInfoList(m_SelectedABType));
+                    Repaint();
+                }
+            }
+            else
+            {
+                var newSearch = m_SearchField.OnGUI(rect, ABDatabase.assetsSearchString);
+                if (ABDatabase.assetsSearchString != newSearch)
+                {
+                    ABDatabase.assetsSearchString = newSearch;
+                    m_AssetTree.UpdateInfoList(ABDatabase.GetAssetInfoList(m_SelectedAssetType));
+                    Repaint();
+                }
+            }
             var tabLabels = new string[]{
                 "All\n" + ABDatabase.GetAssetTypeSizeStr(AssetsType.None),
                 "Material\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Material),
@@ -187,6 +214,7 @@ namespace XBuild.AB.ABBrowser
                 "Asset\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Asset),
                 "Other\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Other),
             };
+            var tabHeight = 34;
             var barWidth = m_Panel.RTRect.width;
             var barRect = new Rect(m_Panel.RTRect.x, m_Panel.RTRect.y - tabHeight,
                 m_Panel.RTRect.width, tabHeight - 0.5f);
