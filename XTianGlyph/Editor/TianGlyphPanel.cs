@@ -9,10 +9,38 @@ namespace XTianGlyph
     [System.Serializable]
     public class TianGlyphPanel : ITianGlyphPanel
     {
+        private class PanelInfo
+        {
+            internal ITianGlyphPanel panel;
+            internal float topOffset;
+            internal float bottomOffset;
+            internal bool outline = true;
+            internal Rect rect;
+            internal void SetInfo(ITianGlyphPanel panel, float topOffset, float bottomOffset, bool outline)
+            {
+                this.panel = panel;
+                this.topOffset = topOffset;
+                this.bottomOffset = bottomOffset;
+                this.outline = outline;
+                if (panel != null)
+                {
+                    panel.Reload();
+                }
+            }
+
+            internal void OnGUI(Rect rect)
+            {
+                this.rect = new Rect(rect.x, rect.y + topOffset, rect.width, rect.height - topOffset - bottomOffset);
+                panel?.OnGUI(this.rect);
+                if (outline) DrawOutline(this.rect, 1f);
+            }
+        }
         const float k_SplitterWidth = 3f;
         [SerializeField] private float m_HorizontalPercent;
         [SerializeField] private float m_VertialLeftPercent;
         [SerializeField] private float m_VertialRightPercent;
+
+
         private Rect m_Position;
         private Rect m_HorizontalRect;
         private Rect m_VertialLeftRect;
@@ -21,24 +49,14 @@ namespace XTianGlyph
         private bool m_VertialLeftResizing;
         private bool m_VertialRightResizing;
 
+        private PanelInfo[] m_PanelInfos;
         private EditorWindow m_Parent = null;
 
-        public ITianGlyphPanel LTPanel { get; set; }
-        public ITianGlyphPanel LBPanel { get; set; }
-        public ITianGlyphPanel RTPanel { get; set; }
-        public ITianGlyphPanel RBPanel { get; set; }
-        public Rect LTRect { get; private set; }
-        public Rect LBRect { get; private set; }
-        public Rect RTRect { get; private set; }
-        public Rect RBRect { get; private set; }
-        public float LTOffset { get; set; }
-        public float LBOffset { get; set; }
-        public float RTOffset { get; set; }
-        public float RBOffset { get; set; }
-        public bool LTOutline { get; set; }
-        public bool LBOutline { get; set; }
-        public bool RTOutline { get; set; }
-        public bool RBOutline { get; set; }
+        public Rect LeftTopRect { get { return m_PanelInfos[0].rect; } }
+        public Rect LeftBottomRect { get { return m_PanelInfos[1].rect; } }
+        public Rect RightTopRect { get { return m_PanelInfos[2].rect; } }
+        public Rect RightBottomRect { get { return m_PanelInfos[3].rect; } }
+
         public float SplitterWidth { get { return k_SplitterWidth; } }
 
         public TianGlyphPanel(EditorWindow parent)
@@ -67,6 +85,38 @@ namespace XTianGlyph
             );
         }
 
+        public void OnEnable()
+        {
+            m_PanelInfos = new PanelInfo[4]{
+                new PanelInfo(),
+                new PanelInfo(),
+                new PanelInfo(),
+                new PanelInfo()
+            };
+        }
+
+        public void OnDisable()
+        {
+        }
+
+        public void SetLeftTopPanel(ITianGlyphPanel panel, bool outline = true, float topOffset = 0f, float bottomOffset = 0f)
+        {
+            m_PanelInfos[0].SetInfo(panel, topOffset, bottomOffset, outline);
+        }
+
+        public void SetLeftBottomPanel(ITianGlyphPanel panel, bool outline = true, float topOffset = 0f, float bottomOffset = 0f)
+        {
+            m_PanelInfos[1].SetInfo(panel, topOffset, bottomOffset, outline);
+        }
+        public void SetRightTopPanel(ITianGlyphPanel panel, bool outline = true, float topOffset = 0f, float bottomOffset = 0f)
+        {
+            m_PanelInfos[2].SetInfo(panel, topOffset, bottomOffset, outline);
+        }
+        public void SetRigthBottomPanel(ITianGlyphPanel panel, bool outline = true, float topOffsetset = 0f, float bottomOffset = 0f)
+        {
+            m_PanelInfos[3].SetInfo(panel, topOffsetset, bottomOffset, outline);
+        }
+
         public void Reload()
         {
         }
@@ -78,56 +128,38 @@ namespace XTianGlyph
             HandleHorizontalResize();
             HandleVerticalResize();
 
-            LTRect = new Rect(
+            var LTRect = new Rect(
                 m_Position.x + k_SplitterWidth,
-                m_Position.y + LTOffset,
+                m_Position.y,
                 m_HorizontalRect.x,
-                m_VertialLeftRect.y - m_Position.y - LTOffset);
-            LTPanel?.OnGUI(LTRect);
-            if (LTOutline)
-            {
-                DrawOutline(LTRect, 1f);
-            }
+                m_VertialLeftRect.y - m_Position.y);
+            m_PanelInfos[0].OnGUI(LTRect);
 
-
-            LBRect = new Rect(
+            var LBRect = new Rect(
                 LTRect.x,
                 LTRect.y + LTRect.height + k_SplitterWidth,
                 LTRect.width,
-                m_Position.height - LTRect.height - k_SplitterWidth * 2 + LBOffset);
-            LBPanel?.OnGUI(LBRect);
-            if (LBOutline)
-            {
-                DrawOutline(LBRect, 1f);
-            }
+                m_Position.height - LTRect.height - k_SplitterWidth * 2);
+            m_PanelInfos[1].OnGUI(LBRect);
 
             float panelLeft = m_HorizontalRect.x + 2 * k_SplitterWidth;
             float panelWidth = m_VertialRightRect.width - k_SplitterWidth * 3;
-            float searchHeight = 0f;
-            float panelTop = m_Position.y + searchHeight;
+            float panelTop = m_Position.y;
             float panelHeight = m_VertialRightRect.y - panelTop;
 
-            RTRect = new Rect(
+            var RTRect = new Rect(
                 panelLeft,
-                panelTop + RTOffset,
+                panelTop,
                 panelWidth,
-                panelHeight - RTOffset);
-            RTPanel?.OnGUI(RTRect);
-            if (RTOutline)
-            {
-                DrawOutline(RTRect, 1f);
-            }
+                panelHeight);
+            m_PanelInfos[2].OnGUI(RTRect);
 
-            RBRect = new Rect(
+            var RBRect = new Rect(
                 panelLeft,
                 panelTop + panelHeight + k_SplitterWidth,
                 panelWidth,
-                (m_Position.height - panelHeight) - k_SplitterWidth * 2 + RBOffset);
-            RBPanel?.OnGUI(RBRect);
-            if (RBOutline)
-            {
-                DrawOutline(RBRect, 1f);
-            }
+                (m_Position.height - panelHeight) - k_SplitterWidth * 2);
+            m_PanelInfos[3].OnGUI(RBRect);
 
             if (m_HorzontalResizing || m_VertialLeftResizing || m_VertialRightResizing)
             {

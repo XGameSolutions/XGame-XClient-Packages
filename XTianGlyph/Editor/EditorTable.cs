@@ -7,47 +7,27 @@ using UnityEditor;
 
 namespace XTianGlyph
 {
+    /// <summary>
+    /// 表格
+    /// </summary>
     public class EditorTable : TreeView, ITianGlyphPanel
     {
         public static EditorTable CreateTable(int column)
         {
-            var state = GetDefaultState();
-            var mchs = GetDefaultMCHS(column);
+            var state = TianGlyphUtil.GetDefaultState();
+            var mchs = TianGlyphUtil.GetDefaultMCHS(column);
             return new EditorTable(state, mchs);
         }
 
         public static EditorTable CreateTable(int column, TreeViewState state)
         {
-            var mchs = GetDefaultMCHS(column);
+            var mchs = TianGlyphUtil.GetDefaultMCHS(column);
             return new EditorTable(state, mchs);
         }
 
         public static EditorTable CreateTable(TreeViewState state, MultiColumnHeaderState mchs)
         {
             return new EditorTable(state, mchs);
-        }
-
-        public static TreeViewState GetDefaultState()
-        {
-            return new TreeViewState();
-        }
-
-        public static MultiColumnHeaderState GetDefaultMCHS(int column)
-        {
-            var m_Columns = new MultiColumnHeaderState.Column[column];
-            for (int i = 0; i < column; i++)
-            {
-                var columnInfo = new MultiColumnHeaderState.Column();
-                columnInfo.headerContent = new GUIContent("Column" + i, "");
-                columnInfo.minWidth = 30;
-                columnInfo.width = 50;
-                columnInfo.maxWidth = 100;
-                columnInfo.headerTextAlignment = TextAlignment.Left;
-                columnInfo.canSort = true;
-                columnInfo.autoResize = true;
-                m_Columns[i] = columnInfo;
-            }
-            return new MultiColumnHeaderState(m_Columns);
         }
 
         private TreeViewItem m_RootItem;

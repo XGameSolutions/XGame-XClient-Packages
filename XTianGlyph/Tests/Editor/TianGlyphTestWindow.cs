@@ -65,13 +65,14 @@ namespace XTianGlyph.Tests
         TianGlyphPanel m_Panel;
 
         EditorTable m_RTTable;
+        TestPanel m_LTPanel;
 
 
-        [MenuItem("XTianGlyph/TianGlyphTestWindow")]
+        [MenuItem("XTianGlyph/TianGlyphDemo")]
         static void ShowWindow()
         {
             var window = GetWindow<TianGlyphTestWindow>();
-            window.titleContent = new GUIContent("TianGlyphWindow");
+            window.titleContent = new GUIContent("TianGlyphDemo");
             window.Show();
         }
 
@@ -81,10 +82,7 @@ namespace XTianGlyph.Tests
             {
                 m_Panel = new TianGlyphPanel(this);
             }
-            m_Panel.LTOutline = true;
-            m_Panel.LBOutline = true;
-            m_Panel.RTOutline = true;
-            m_Panel.RBOutline = true;
+            m_Panel.OnEnable();
         }
 
         int count = 0;
@@ -104,9 +102,10 @@ namespace XTianGlyph.Tests
 
         private void OnGUI()
         {
-            if (m_Panel.LTPanel == null)
+            if (m_LTPanel == null)
             {
-                m_Panel.LTPanel = new TestPanel();
+                m_LTPanel = new TestPanel();
+                m_Panel.SetLeftTopPanel(m_LTPanel);
             }
             if (m_RTTable == null)
             {
@@ -117,8 +116,7 @@ namespace XTianGlyph.Tests
                     m_RTTable.SetColumnHeader(0, TestInfo.GetColumnHeader(i));
                 }
                 m_RTTable.OnSelectionChanged = SelectedInfo;
-                m_Panel.RTPanel = m_RTTable;
-                m_Panel.RTPanel.Reload();
+                m_Panel.SetRightTopPanel(m_RTTable, false);
             }
             var panelRect = GetPanelArea();
             m_Panel.OnGUI(panelRect);
@@ -132,7 +130,7 @@ namespace XTianGlyph.Tests
 
         private void SelectedInfo(List<IEditorTableItemInfo> list)
         {
-            Debug.LogError("selected:" + list.Count);
+            //Debug.LogError("selected:" + list.Count);
         }
     }
 }
