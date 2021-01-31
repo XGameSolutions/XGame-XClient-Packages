@@ -36,14 +36,16 @@ namespace XBuild.AB.ABBrowser
         [SerializeField] private BuildTarget m_SelectedPlatform = BuildTarget.StandaloneWindows64;
         [SerializeField] private int m_SelectedPlatformIndex;
         [SerializeField] private int m_SelectedSearchIndex;
+        [SerializeField] private int m_SelectedDepIndex;
 
         private EditorTable m_ABTree;
         private EditorTable m_ABDepTree;
         private EditorTable m_AssetTree;
         private MessageListPanel m_MessagePanel;
-        const float k_ToolbarPadding = 15;
         const float k_MenubarPadding = 46.5f;
-        const float kButtonWidth = 150;
+        const float k_DepToolbarHeight = 27f;
+        const float k_ABToolbarHeight = 27f;
+        const float k_AssetsToolbarHeight = 34f;
 
         private GUIContent m_RefreshTexture;
         private Texture2D m_AndroidTexture;
@@ -51,6 +53,7 @@ namespace XBuild.AB.ABBrowser
         private Texture2D m_StandaloneTexture;
         private GUIContent[] m_PlatformTextures;
         private SearchField m_SearchField;
+        private List<ABInfo> m_SelectedABInfos;
 
 
         [MenuItem("XBuild/AB-Browser")]
@@ -61,10 +64,6 @@ namespace XBuild.AB.ABBrowser
             Instance.Show();
         }
 
-
-
-
-
         private void OnEnable()
         {
             ABDatabase.RefreshAB(m_SelectedPlatform);
@@ -73,8 +72,7 @@ namespace XBuild.AB.ABBrowser
             {
                 m_Panel = new TianGlyphPanel(this);
             }
-            m_Panel.RTOffset = 16.5f;
-            m_Panel.LBOffset = 0f;
+            m_Panel.OnEnable();
             m_RefreshTexture = new GUIContent(EditorGUIUtility.FindTexture("Refresh"), "Refresh AB list");
             m_StandaloneTexture = EditorGUIUtility.FindTexture("BuildSettings.Standalone@2x");
             m_IOSTexture = EditorGUIUtility.FindTexture("BuildSettings.iPhone@2x");
@@ -109,20 +107,17 @@ namespace XBuild.AB.ABBrowser
 
         private void OnGUI()
         {
-            var panelRect = GetPanelArea();
             InitPanelTree();
             GUIButton();
-            m_Panel.OnGUI(panelRect);
-
+            GUITianGlyphPanel();
             GUISearchAndAsset();
         }
 
         private void GUIButton()
         {
             GUILayout.BeginHorizontal();
-            var btnHeight = 27f;
             var platform = GUILayout.SelectionGrid(m_SelectedPlatformIndex, m_PlatformTextures, 3,
-                GUILayout.Width(btnHeight * 3.3f), GUILayout.Height(btnHeight));
+                GUILayout.Width(k_ABToolbarHeight * 3.3f), GUILayout.Height(k_ABToolbarHeight));
             if (platform != m_SelectedPlatformIndex)
             {
                 m_SelectedPlatformIndex = platform;
@@ -134,7 +129,7 @@ namespace XBuild.AB.ABBrowser
                 }
                 ABDatabase.RefreshAB(m_SelectedPlatform);
             }
-            var clicked = GUILayout.Button(m_RefreshTexture, GUILayout.Width(btnHeight), GUILayout.Height(btnHeight));
+            var clicked = GUILayout.Button(m_RefreshTexture, GUILayout.Width(k_ABToolbarHeight), GUILayout.Height(k_ABToolbarHeight));
             if (clicked)
             {
                 ABDatabase.RefreshAB(m_SelectedPlatform);
@@ -147,8 +142,8 @@ namespace XBuild.AB.ABBrowser
                 "Other - "+ ABDatabase.GetABTypeSizeStr(ABType.Other),
                 "Dep - "+ ABDatabase.GetABTypeSizeStr(ABType.Dep)
             };
-            var barWidth = position.width - 5 * btnHeight + 6;
-            var selected = (ABType)GUILayout.Toolbar((int)m_SelectedABType, tabLabels, GUILayout.Height(btnHeight),
+            var barWidth = position.width - 5 * k_ABToolbarHeight + 7.4f;
+            var selected = (ABType)GUILayout.Toolbar((int)m_SelectedABType, tabLabels, GUILayout.Height(k_ABToolbarHeight),
                 GUILayout.Width(barWidth));
             if (selected != m_SelectedABType)
             {
@@ -158,14 +153,20 @@ namespace XBuild.AB.ABBrowser
             GUILayout.EndHorizontal();
         }
 
+        private void GUITianGlyphPanel()
+        {
+            var panelRect = GetPanelArea();
+            m_Panel.OnGUI(panelRect);
+        }
+
         private void GUISearchAndAsset()
         {
             var searchHeight = 16.8f;
             var btnWidth = 98;
             m_SelectedSearchIndex = GUILayout.SelectionGrid(m_SelectedSearchIndex, Styles.searchBtns, 2,
                 GUILayout.Width(btnWidth), GUILayout.Height(searchHeight - 2));
-            var rect = new Rect(m_Panel.LTRect.x + btnWidth, m_Panel.LTRect.y - searchHeight + 0.5f,
-                m_Panel.LTRect.width - btnWidth + 2 * m_Panel.SplitterWidth, searchHeight);
+            var rect = new Rect(m_Panel.LeftTopRect.x + btnWidth, m_Panel.LeftTopRect.y - searchHeight + 0.5f,
+                m_Panel.LeftTopRect.width - btnWidth + 2 * m_Panel.SplitterWidth, searchHeight);
             if (m_SelectedSearchIndex == 0)
             {
                 var newSearch = m_SearchField.OnGUI(rect, ABDatabase.abSearchString);
@@ -195,15 +196,24 @@ namespace XBuild.AB.ABBrowser
                 "Asset\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Asset),
                 "Other\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Other),
             };
-            var tabHeight = 34;
-            var barWidth = m_Panel.RTRect.width;
-            var barRect = new Rect(m_Panel.RTRect.x, m_Panel.RTRect.y - tabHeight,
-                m_Panel.RTRect.width, tabHeight - 0.5f);
+            var barWidth = m_Panel.RightTopRect.width;
+            var barRect = new Rect(m_Panel.RightTopRect.x, m_Panel.RightTopRect.y - k_AssetsToolbarHeight,
+                m_Panel.RightTopRect.width, k_AssetsToolbarHeight - 0.5f);
             var selected = (AssetsType)GUI.Toolbar(barRect, (int)m_SelectedAssetType, tabLabels);
             if (selected != m_SelectedAssetType)
             {
                 m_SelectedAssetType = selected;
                 m_AssetTree.UpdateInfoList(ABDatabase.GetAssetInfoList(m_SelectedAssetType));
+            }
+
+            barWidth = m_Panel.LeftBottomRect.width;
+            barRect = new Rect(m_Panel.LeftBottomRect.x, m_Panel.LeftBottomRect.y - k_DepToolbarHeight,
+                m_Panel.LeftBottomRect.width, k_DepToolbarHeight - 0.5f);
+            var selectedDep = GUI.Toolbar(barRect, m_SelectedDepIndex, new string[] { "Dep", "Ref" });
+            if (selectedDep != m_SelectedDepIndex)
+            {
+                m_SelectedDepIndex = selectedDep;
+                UpdateDepInfoList();
             }
         }
 
@@ -215,9 +225,7 @@ namespace XBuild.AB.ABBrowser
             if (m_MessagePanel == null)
             {
                 m_MessagePanel = new MessageListPanel();
-                m_Panel.RBPanel = m_MessagePanel;
-                m_Panel.RBOutline = true;
-                m_Panel.RBPanel.Reload();
+                m_Panel.SetRigthBottomPanel(m_MessagePanel);
             }
         }
 
@@ -231,9 +239,7 @@ namespace XBuild.AB.ABBrowser
                 m_ABTree.SetColumnHeader(i, ABInfo.GetColumnHeader(i));
             }
             m_ABTree.OnSelectionChanged = OnSelectedABList;
-            m_Panel.LTOutline = false;
-            m_Panel.LTPanel = m_ABTree;
-            m_Panel.LTPanel.Reload();
+            m_Panel.SetLeftTopPanel(m_ABTree, false);
         }
 
         private void InitABDepTable()
@@ -246,9 +252,7 @@ namespace XBuild.AB.ABBrowser
                 m_ABDepTree.SetColumnHeader(i, ABInfo.GetColumnHeader(i));
             }
             m_ABDepTree.OnSelectionChanged = OnSelectedABDepList;
-            m_Panel.LBOutline = false;
-            m_Panel.LBPanel = m_ABDepTree;
-            m_Panel.LBPanel.Reload();
+            m_Panel.SetLeftBottomPanel(m_ABDepTree, false, k_DepToolbarHeight);
         }
 
         private void InitAssetsTable()
@@ -261,17 +265,28 @@ namespace XBuild.AB.ABBrowser
                 m_AssetTree.SetColumnHeader(i, ABAssetsInfo.GetColumnHeader(i));
             }
             m_AssetTree.OnSelectionChanged = OnSelectedAssetsList;
-            m_Panel.RTOutline = false;
-            m_Panel.RTPanel = m_AssetTree;
-            m_Panel.RTPanel.Reload();
+            m_Panel.SetRightTopPanel(m_AssetTree, false, k_AssetsToolbarHeight / 2);
         }
+
 
         private void OnSelectedABList(List<IEditorTableItemInfo> infoList)
         {
-            var list = infoList.ConvertAll<ABInfo>(info => info as ABInfo);
-            ABDatabase.RefreshAssets(list);
+            m_SelectedABInfos = infoList.ConvertAll<ABInfo>(info => info as ABInfo);
+            ABDatabase.RefreshAssets(m_SelectedABInfos);
             m_AssetTree.UpdateInfoList(null);
-            m_ABDepTree.UpdateInfoList(ABDatabase.GetABDepInfoList(list));
+            UpdateDepInfoList();
+        }
+
+        private void UpdateDepInfoList()
+        {
+            if (m_SelectedDepIndex == 0)
+            {
+                m_ABDepTree.UpdateInfoList(ABDatabase.GetABDepInfoList(m_SelectedABInfos));
+            }
+            else
+            {
+                m_ABDepTree.UpdateInfoList(ABDatabase.GetABRefInfoList(m_SelectedABInfos));
+            }
         }
 
         private void OnSelectedABDepList(List<IEditorTableItemInfo> infoList)

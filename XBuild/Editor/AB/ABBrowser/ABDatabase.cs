@@ -187,6 +187,21 @@ namespace XBuild.AB.ABBrowser
             }
             return s_TempABDepList;
         }
+        public static List<ABInfo> GetABRefInfoList(List<ABInfo> abList)
+        {
+            s_TempABDepList.Clear();
+            foreach (var info in abList)
+            {
+                foreach (var ab in info.RefABList)
+                {
+                    if (s_ABInfoDic.ContainsKey(ab) && !s_TempABDepList.Contains(s_ABInfoDic[ab]))
+                    {
+                        s_TempABDepList.Add(s_ABInfoDic[ab]);
+                    }
+                }
+            }
+            return s_TempABDepList;
+        }
 
         static List<ABAssetsInfo> s_TempAssetList = new List<ABAssetsInfo>();
         public static List<ABAssetsInfo> GetAssetInfoList(AssetsType type)

@@ -29,6 +29,9 @@ namespace XBuild.AB.ABBrowser
         private List<string> m_DepABList = new List<string>();
         private List<string> m_RefABList = new List<string>();
 
+        public List<string> RefABList { get { return m_RefABList; } }
+        public List<string> DepABList { get { return m_DepABList; } }
+
         public bool AddDepAB(string abName)
         {
             if (!m_DepABList.Contains(abName))
