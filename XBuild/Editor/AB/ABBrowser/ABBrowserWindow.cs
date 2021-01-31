@@ -37,20 +37,22 @@ namespace XBuild.AB.ABBrowser
         [SerializeField] private int m_SelectedPlatformIndex;
         [SerializeField] private int m_SelectedSearchIndex;
         [SerializeField] private int m_SelectedDepIndex;
+        [SerializeField] internal ABDatabase.ABSource abSource = ABDatabase.ABSource.Dir;
 
         private EditorTable m_ABTree;
         private EditorTable m_ABDepTree;
         private EditorTable m_AssetTree;
         private MessageListPanel m_MessagePanel;
-        const float k_MenubarPadding = 46.5f;
-        const float k_DepToolbarHeight = 27f;
-        const float k_ABToolbarHeight = 27f;
+        const float k_MenubarPadding = 49.5f;
+        const float k_DepToolbarHeight = 20f;
+        const float k_ABToolbarHeight = 30f;
         const float k_AssetsToolbarHeight = 34f;
 
         private GUIContent m_RefreshTexture;
-        private Texture2D m_AndroidTexture;
-        private Texture2D m_IOSTexture;
-        private Texture2D m_StandaloneTexture;
+        private GUIContent m_AndroidTexture;
+        private GUIContent m_IOSTexture;
+        private GUIContent m_StandaloneTexture;
+        private GUIContent m_SettingsTexture;
         private GUIContent[] m_PlatformTextures;
         private SearchField m_SearchField;
         private List<ABInfo> m_SelectedABInfos;
@@ -66,7 +68,7 @@ namespace XBuild.AB.ABBrowser
 
         private void OnEnable()
         {
-            ABDatabase.RefreshAB(m_SelectedPlatform);
+            RefreshAB();
             var panelPos = GetPanelArea();
             if (m_Panel == null)
             {
@@ -74,19 +76,30 @@ namespace XBuild.AB.ABBrowser
             }
             m_Panel.OnEnable();
             m_RefreshTexture = new GUIContent(EditorGUIUtility.FindTexture("Refresh"), "Refresh AB list");
-            m_StandaloneTexture = EditorGUIUtility.FindTexture("BuildSettings.Standalone@2x");
-            m_IOSTexture = EditorGUIUtility.FindTexture("BuildSettings.iPhone@2x");
-            m_AndroidTexture = EditorGUIUtility.FindTexture("BuildSettings.Android@2x");
+            m_StandaloneTexture = new GUIContent(EditorGUIUtility.FindTexture("BuildSettings.Standalone@2x"), "PC AB");
+            m_IOSTexture = new GUIContent(EditorGUIUtility.FindTexture("BuildSettings.iPhone@2x"), "iOS AB");
+            m_AndroidTexture = new GUIContent(EditorGUIUtility.FindTexture("BuildSettings.Android@2x"), "Android AB");
+            m_SettingsTexture = new GUIContent(EditorGUIUtility.FindTexture("d_SettingsIcon@2x"), "Open Settings panel");
             m_PlatformTextures = new GUIContent[] {
-                new GUIContent(m_StandaloneTexture,"PC AB"),
-                new GUIContent(m_IOSTexture,"iOS AB"),
-                new GUIContent(m_AndroidTexture,"Android AB")
+                m_StandaloneTexture,
+                m_IOSTexture,
+                m_AndroidTexture
             };
             m_SearchField = new SearchField();
         }
 
         private void OnDisable()
         {
+        }
+
+        internal void RefreshAB()
+        {
+            ABDatabase.abSource = abSource;
+            var error = ABDatabase.RefreshAB(m_SelectedPlatform);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ShowNotification(new GUIContent(error));
+            }
         }
 
         private void Update()
@@ -116,6 +129,15 @@ namespace XBuild.AB.ABBrowser
         private void GUIButton()
         {
             GUILayout.BeginHorizontal();
+            if (GUILayout.Button(m_SettingsTexture, GUILayout.Width(k_ABToolbarHeight), GUILayout.Height(k_ABToolbarHeight)))
+            {
+                GUISettingsPanel();
+            }
+            var clicked = GUILayout.Button(m_RefreshTexture, GUILayout.Width(k_ABToolbarHeight), GUILayout.Height(k_ABToolbarHeight));
+            if (clicked)
+            {
+                RefreshAB();
+            }
             var platform = GUILayout.SelectionGrid(m_SelectedPlatformIndex, m_PlatformTextures, 3,
                 GUILayout.Width(k_ABToolbarHeight * 3.3f), GUILayout.Height(k_ABToolbarHeight));
             if (platform != m_SelectedPlatformIndex)
@@ -127,20 +149,15 @@ namespace XBuild.AB.ABBrowser
                     case 1: m_SelectedPlatform = BuildTarget.iOS; break;
                     case 2: m_SelectedPlatform = BuildTarget.Android; break;
                 }
-                ABDatabase.RefreshAB(m_SelectedPlatform);
-            }
-            var clicked = GUILayout.Button(m_RefreshTexture, GUILayout.Width(k_ABToolbarHeight), GUILayout.Height(k_ABToolbarHeight));
-            if (clicked)
-            {
-                ABDatabase.RefreshAB(m_SelectedPlatform);
+                RefreshAB();
             }
             var tabLabels = new string[]{
-                "All - " + ABDatabase.GetABTypeSizeStr(ABType.All),
-                "Model - "+ ABDatabase.GetABTypeSizeStr(ABType.Model),
-                "Scene - "+ ABDatabase.GetABTypeSizeStr(ABType.Scene),
-                "UI - "+ ABDatabase.GetABTypeSizeStr(ABType.UI),
-                "Other - "+ ABDatabase.GetABTypeSizeStr(ABType.Other),
-                "Dep - "+ ABDatabase.GetABTypeSizeStr(ABType.Dep)
+                "All\n" + ABDatabase.GetABTypeSizeStr(ABType.All),
+                "Model\n"+ ABDatabase.GetABTypeSizeStr(ABType.Model),
+                "Scene\n"+ ABDatabase.GetABTypeSizeStr(ABType.Scene),
+                "UI\n"+ ABDatabase.GetABTypeSizeStr(ABType.UI),
+                "Other\n"+ ABDatabase.GetABTypeSizeStr(ABType.Other),
+                "Dep\n"+ ABDatabase.GetABTypeSizeStr(ABType.Dep)
             };
             var barWidth = position.width - 5 * k_ABToolbarHeight + 7.4f;
             var selected = (ABType)GUILayout.Toolbar((int)m_SelectedABType, tabLabels, GUILayout.Height(k_ABToolbarHeight),
@@ -151,6 +168,12 @@ namespace XBuild.AB.ABBrowser
                 m_ABTree.UpdateInfoList(ABDatabase.GetABInfoList(m_SelectedABType));
             }
             GUILayout.EndHorizontal();
+        }
+
+        private void GUISettingsPanel()
+        {
+            var rect = new Rect(m_Panel.LeftTopRect.x, m_Panel.LeftTopRect.y, m_Panel.LeftTopRect.width, 0);
+            PopupWindow.Show(rect, new ABSettingsPopupContent());
         }
 
         private void GUITianGlyphPanel()

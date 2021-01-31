@@ -67,6 +67,8 @@ namespace XBuild.AB
         public string[] file_suffix_texture = new string[] { ".tga", ".png", ".psd", ".tif",
             ".tiff", ".dds", ".jpeg", ".jpg", ".gif", ".bmp", ".exr", ".hdr"};
 
+        public string[] file_suffix_exclude = new string[] { ".cs" };
+
         public static ABConfig Instance
         {
             get
@@ -195,6 +197,24 @@ namespace XBuild.AB
             if (category == AssetsCategory.UI) return false;
             return type == AssetsType.Material || type == AssetsType.Texture || type == AssetsType.Shader
                 || type == AssetsType.Prefab || type == AssetsType.Asset;
+        }
+
+        public static bool IsExcludeAssets(string path)
+        {
+            foreach (var suffix in Instance.file_suffix_exclude)
+            {
+                if (path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
+        }
+
+        public static bool IsExcludeExtention(string extention)
+        {
+            foreach (var suffix in Instance.file_suffix_exclude)
+            {
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -352,7 +372,7 @@ namespace XBuild.AB
         internal static string GetABDirPath()
         {
             if (Instance.AB_DIR.StartsWith("/")) Instance.AB_DIR = Instance.AB_DIR.Substring(1);
-            if (Instance.AB_DIR.EndsWith("/")) Instance.AB_DIR = Instance.AB_DIR.Substring(0, Instance.AB_DIR.Length - 2);
+            if (Instance.AB_DIR.EndsWith("/")) Instance.AB_DIR = Instance.AB_DIR.Substring(0, Instance.AB_DIR.Length - 1);
             return string.Format("{0}/{1}", Application.dataPath, Instance.AB_DIR);
         }
     }

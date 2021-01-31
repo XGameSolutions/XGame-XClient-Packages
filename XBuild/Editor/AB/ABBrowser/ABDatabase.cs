@@ -10,6 +10,11 @@ namespace XBuild.AB.ABBrowser
 {
     public static class ABDatabase
     {
+        public enum ABSource
+        {
+            Dir,
+            AssetDatabase
+        }
         class WaitingAssetsInfo
         {
             public string path;
@@ -34,9 +39,15 @@ namespace XBuild.AB.ABBrowser
             {
                 return string.Format("{0}个, {1}", count, EditorUtility.FormatBytes(size));
             }
+
+            public string StrInfo(int totalCount)
+            {
+                return string.Format("{0}/{1}个, {2}", count, totalCount, EditorUtility.FormatBytes(size));
+            }
         }
         private static AssetBundleManifest s_Manifest;
         private static AssetBundle s_ManifestAB;
+
         private static Dictionary<string, ABInfo> s_ABInfoDic = new Dictionary<string, ABInfo>();
         private static Dictionary<ABType, StatInfo> s_ABTypeStat = new Dictionary<ABType, StatInfo>();
         private static Dictionary<string, ABAssetsInfo> s_AssetInfoDic = new Dictionary<string, ABAssetsInfo>();
@@ -47,6 +58,8 @@ namespace XBuild.AB.ABBrowser
         private static string s_ABDirPath;
         private static bool s_ABDirty;
         private static bool s_AssetDirty;
+        private static int s_TotalABs;
+        private static int s_TotalAssets;
         private static List<string> s_WaitingInitABs = new List<string>();
         private static List<WaitingAssetsInfo> s_WaitingInitAssets = new List<WaitingAssetsInfo>();
 
@@ -55,6 +68,7 @@ namespace XBuild.AB.ABBrowser
 
         public static string abSearchString;
         public static string assetsSearchString;
+        public static ABSource abSource = ABSource.Dir;
 
         public static bool IsABDirty()
         {
@@ -90,17 +104,18 @@ namespace XBuild.AB.ABBrowser
             }
         }
 
-        public static void RefreshAB(BuildTarget target)
+        public static string RefreshAB(BuildTarget target)
         {
             var strPlatform = target.ToString();
             s_TargetPlatform = target;
             s_ABDirPath = string.Format("{0}/{1}/", ABConfig.GetABDirPath(), strPlatform);
             if (!Directory.Exists(s_ABDirPath))
             {
-                Debug.LogError("can't find dir:" + s_ABDirPath);
-                return;
+                var error = "can't find dir:" + s_ABDirPath;
+                Debug.LogError(error);
+                return error;
             }
-
+            s_TotalABs = 0;
             s_ABInfoDic.Clear();
             s_AssetInfoDic.Clear();
             s_ABTypeStat.Clear();
@@ -117,11 +132,14 @@ namespace XBuild.AB.ABBrowser
             {
                 s_Manifest = s_ManifestAB.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
                 s_WaitingInitABs.AddRange(s_Manifest.GetAllAssetBundles());
+                s_TotalABs = s_WaitingInitABs.Count;
             }
+            return null;
         }
 
         public static void RefreshAssets(List<ABInfo> abList)
         {
+            s_TotalAssets = 0;
             s_AssetTypeStat.Clear();
             s_AssetWaitingDic.Clear();
             s_WaitingInitAssets.Clear();
@@ -131,6 +149,7 @@ namespace XBuild.AB.ABBrowser
                 var assetPaths = AssetDatabase.GetAssetPathsFromAssetBundle(info.name);
                 foreach (var path in AssetDatabase.GetDependencies(assetPaths, true))
                 {
+                    if (ABConfig.IsExcludeAssets(path)) continue;
                     if (!s_AssetWaitingDic.ContainsKey(path))
                     {
                         s_AssetWaitingDic[path] = new WaitingAssetsInfo(path);
@@ -139,6 +158,7 @@ namespace XBuild.AB.ABBrowser
                     s_AssetWaitingDic[path].parents.Add(info.name);
                 }
             }
+            s_TotalAssets = s_AssetWaitingDic.Count;
             s_AssetDirty = true;
         }
 
@@ -173,15 +193,18 @@ namespace XBuild.AB.ABBrowser
         public static List<ABInfo> GetABDepInfoList(List<ABInfo> abList)
         {
             s_TempABDepList.Clear();
-            foreach (var info in abList)
+            if (abList != null)
             {
-                var list = s_Manifest.GetAllDependencies(info.name);
-                if (list == null || list.Length == 0) continue;
-                foreach (var ab in list)
+                foreach (var info in abList)
                 {
-                    if (s_ABInfoDic.ContainsKey(ab) && !s_TempABDepList.Contains(s_ABInfoDic[ab]))
+                    var list = s_Manifest.GetAllDependencies(info.name);
+                    if (list == null || list.Length == 0) continue;
+                    foreach (var ab in list)
                     {
-                        s_TempABDepList.Add(s_ABInfoDic[ab]);
+                        if (s_ABInfoDic.ContainsKey(ab) && !s_TempABDepList.Contains(s_ABInfoDic[ab]))
+                        {
+                            s_TempABDepList.Add(s_ABInfoDic[ab]);
+                        }
                     }
                 }
             }
@@ -190,13 +213,16 @@ namespace XBuild.AB.ABBrowser
         public static List<ABInfo> GetABRefInfoList(List<ABInfo> abList)
         {
             s_TempABDepList.Clear();
-            foreach (var info in abList)
+            if (abList != null)
             {
-                foreach (var ab in info.RefABList)
+                foreach (var info in abList)
                 {
-                    if (s_ABInfoDic.ContainsKey(ab) && !s_TempABDepList.Contains(s_ABInfoDic[ab]))
+                    foreach (var ab in info.RefABList)
                     {
-                        s_TempABDepList.Add(s_ABInfoDic[ab]);
+                        if (s_ABInfoDic.ContainsKey(ab) && !s_TempABDepList.Contains(s_ABInfoDic[ab]))
+                        {
+                            s_TempABDepList.Add(s_ABInfoDic[ab]);
+                        }
                     }
                 }
             }
@@ -231,13 +257,21 @@ namespace XBuild.AB.ABBrowser
 
         public static string GetABTypeSizeStr(ABType type)
         {
-            if (s_ABTypeStat.ContainsKey(type)) return s_ABTypeStat[type].StrInfo();
+            if (s_ABTypeStat.ContainsKey(type))
+            {
+                if (type == ABType.All) return s_ABTypeStat[type].StrInfo(s_TotalABs);
+                else return s_ABTypeStat[type].StrInfo();
+            }
             else return "";
         }
 
         public static string GetAssetTypeSizeStr(AssetsType type)
         {
-            if (s_AssetTypeStat.ContainsKey(type)) return s_AssetTypeStat[type].StrInfo();
+            if (s_AssetTypeStat.ContainsKey(type))
+            {
+                if (type == AssetsType.None) return s_AssetTypeStat[type].StrInfo(s_TotalAssets);
+                else return s_AssetTypeStat[type].StrInfo();
+            }
             else return "--";
         }
 
@@ -275,7 +309,7 @@ namespace XBuild.AB.ABBrowser
         {
             var path = waitInfo.path;
             var extension = Path.GetExtension(path).ToLower();
-            if (ABConfig.IsScript(extension)) return;
+            if (ABConfig.IsExcludeExtention(extension)) return;
             ABAssetsInfo info = null;
             if (!s_AssetInfoDic.ContainsKey(path))
             {
