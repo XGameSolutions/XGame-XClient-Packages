@@ -127,7 +127,7 @@ namespace XBuild.AB.ABBrowser
                 s_ManifestAB.Unload(true);
                 s_ManifestAB = null;
             }
-            s_ManifestAB = AssetBundle.LoadFromFile(s_ABDirPath + strPlatform);
+            s_ManifestAB = ABRegister.LoadAssetBundle(s_ABDirPath + strPlatform);
             if (s_ManifestAB != null)
             {
                 s_Manifest = s_ManifestAB.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
