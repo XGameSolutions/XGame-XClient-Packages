@@ -8,7 +8,7 @@ using XTianGlyph;
 
 namespace XBuild.AB.ABBrowser
 {
-    public class ABBrowserWindow : EditorWindow
+    internal class ABBrowserWindow : EditorWindow
     {
         class Styles
         {

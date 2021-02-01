@@ -7,7 +7,7 @@ using XTianGlyph;
 
 namespace XBuild.AB.ABBrowser
 {
-    public class MessageListPanel : ITianGlyphPanel
+    internal class MessageListPanel : ITianGlyphPanel
     {
         const float k_ScrollbarPadding = 16f;
         const float k_BorderSize = 1f;

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace XBuild.AB
 {
-    public static class ABTool
+    internal static class ABTool
     {
 
         /// <summary>

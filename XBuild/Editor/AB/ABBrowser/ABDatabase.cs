@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace XBuild.AB.ABBrowser
 {
-    public static class ABDatabase
+    internal static class ABDatabase
     {
         public enum ABSource
         {

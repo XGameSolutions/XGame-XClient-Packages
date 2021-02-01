@@ -5,6 +5,7 @@
 /*                                        */
 /******************************************/
 
+using System;
 using UnityEditor;
 using UnityEngine;
 using XBuild;
@@ -86,5 +87,35 @@ public static class BuildAPI
     public static void SceneRefreshSettingList()
     {
         SceneTool.RefreshSettingList(false);
+    }
+
+    /// <summary>
+    /// 注册Build AB前的回调
+    /// </summary>
+    public static void RegisterBeforeBuildABCallback(Action<BuildParams> callback)
+    {
+        BuildRegister.onBeforeBuildAB = callback;
+    }
+    /// <summary>
+    /// 注册Build AB后的回调
+    /// </summary>
+    /// <param name="callback"></param>
+    public static void RegisterAfterBuildABCallback(Action<BuildParams> callback)
+    {
+        BuildRegister.onAfterBuildAB = callback;
+    }
+    /// <summary>
+    /// 注册打包前的回调
+    /// </summary>
+    public static void RegisterBeforeBuildPackageCallback(Action<BuildParams> callback)
+    {
+        BuildRegister.onBeforeBuildPackage = callback;
+    }
+    /// <summary>
+    /// 注册打包后的回调
+    /// </summary>
+    public static void RegisterAfterBuildPacakgeCallback(Action<BuildParams> callback)
+    {
+        BuildRegister.onAfterBuildPackage = callback;
     }
 }

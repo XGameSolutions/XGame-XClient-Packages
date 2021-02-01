@@ -18,7 +18,7 @@ using System.IO;
 
 namespace XBuild
 {
-    public static class BuildTool
+    internal static class BuildTool
     {
         private static BuildParams s_Param;
 

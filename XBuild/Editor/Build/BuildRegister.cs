@@ -10,73 +10,43 @@ using UnityEditor.SceneManagement;
 
 namespace XBuild
 {
-    public static class BuildRegister
+    internal static class BuildRegister
     {
-        private static Action<BuildParams> s_OnBeforeBuildAB;
-        private static Action<BuildParams> s_OnAfterBuildAB;
-        private static Action<BuildParams> s_OnBeforeBuildPackage;
-        private static Action<BuildParams> s_OnAfterBuildPackage;
-
-        /// <summary>
-        /// 注册Build AB前的回调
-        /// </summary>
-        public static void RegisterBeforeBuildABCallback(Action<BuildParams> callback)
-        {
-            s_OnBeforeBuildAB = callback;
-        }
-        /// <summary>
-        /// 注册Build AB后的回调
-        /// </summary>
-        /// <param name="callback"></param>
-        public static void RegisterAfterBuildABCallback(Action<BuildParams> callback)
-        {
-            s_OnAfterBuildAB = callback;
-        }
-        /// <summary>
-        /// 注册打包前的回调
-        /// </summary>
-        public static void RegisterBeforeBuildPackageCallback(Action<BuildParams> callback)
-        {
-            s_OnBeforeBuildPackage = callback;
-        }
-        /// <summary>
-        /// 注册打包后的回调
-        /// </summary>
-        public static void RegisterAfterBuildPacakgeCallback(Action<BuildParams> callback)
-        {
-            s_OnAfterBuildPackage = callback;
-        }
+        public static Action<BuildParams> onBeforeBuildAB;
+        public static Action<BuildParams> onAfterBuildAB;
+        public static Action<BuildParams> onBeforeBuildPackage;
+        public static Action<BuildParams> onAfterBuildPackage;
 
         /// <summary>
         /// 打AB前的回调
         /// </summary>
-        internal static void OnBeforeBuildAB(BuildParams buildParam)
+        public static void OnBeforeBuildAB(BuildParams buildParam)
         {
-            if (s_OnBeforeBuildAB != null)
+            if (onBeforeBuildAB != null)
             {
-                s_OnBeforeBuildAB(buildParam);
+                onBeforeBuildAB(buildParam);
             }
         }
 
         /// <summary>
         /// 打AB后的回调
         /// </summary>
-        internal static void OnAfterBuildAB(BuildParams buildParam)
+        public static void OnAfterBuildAB(BuildParams buildParam)
         {
-            if (s_OnAfterBuildAB != null)
+            if (onAfterBuildAB != null)
             {
-                s_OnAfterBuildAB(buildParam);
+                onAfterBuildAB(buildParam);
             }
         }
 
         /// <summary>
         /// 打包体前的回调
         /// </summary>
-        internal static void OnBeforeBuildPackage(BuildParams buildParam)
+        public static void OnBeforeBuildPackage(BuildParams buildParam)
         {
-            if (s_OnBeforeBuildPackage != null)
+            if (onBeforeBuildPackage != null)
             {
-                s_OnBeforeBuildPackage(buildParam);
+                onBeforeBuildPackage(buildParam);
             }
             SceneTool.RefreshSettingList(true);
             EditorSceneManager.OpenScene(buildParam.startScene);
@@ -85,12 +55,12 @@ namespace XBuild
         /// <summary>
         /// 打包体后的回调
         /// </summary>
-        internal static void OnAfterBuildPackage(BuildParams buildParam, bool success)
+        public static void OnAfterBuildPackage(BuildParams buildParam, bool success)
         {
             SceneTool.RefreshSettingList(false);
-            if (s_OnAfterBuildPackage != null)
+            if (onAfterBuildPackage != null)
             {
-                s_OnAfterBuildPackage(buildParam);
+                onAfterBuildPackage(buildParam);
             }
         }
     }

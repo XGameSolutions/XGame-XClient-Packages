@@ -10,7 +10,7 @@ using XTianGlyph;
 
 namespace XBuild.AB.ABBrowser
 {
-    public enum ABType
+    internal enum ABType
     {
         All,
         Model,
@@ -20,7 +20,7 @@ namespace XBuild.AB.ABBrowser
         Dep
     }
 
-    public class ABInfo : IEditorTableItemInfo
+    internal class ABInfo : IEditorTableItemInfo
     {
         public ABType type;
         public string name;

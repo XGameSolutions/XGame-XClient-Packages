@@ -1,3 +1,4 @@
+
 /******************************************/
 /*                                        */
 /*     Copyright (c) 2020 monitor1394     */
@@ -6,22 +7,16 @@
 /******************************************/
 
 using UnityEngine;
-using UnityEditor;
 
 namespace XBuild.AB
 {
-    internal class ABSetWindow : EditorWindow
-    {
-        [MenuItem("Assets/SetABName")]
-        private static void ShowWindow()
-        {
-            var window = GetWindow<ABSetWindow>();
-            window.titleContent = new GUIContent("SetABName");
-            window.Show();
-        }
+    public delegate AssetBundle LoadAssetBundleDelegate(string path);
 
-        private void OnGUI()
+    public static class ABAPI
+    {
+        public static void RegisterLoadAssetBundle(LoadAssetBundleDelegate func)
         {
+            ABRegister.loadABDelegate = func;
         }
     }
 }

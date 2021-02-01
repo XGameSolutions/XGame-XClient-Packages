@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace XBuild
 {
-    public class BuildLog
+    internal class BuildLog
     {
         private static BuildLog s_Instance;
         private StreamWriter m_Write;

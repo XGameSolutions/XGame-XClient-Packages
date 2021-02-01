@@ -11,7 +11,7 @@ using XTianGlyph;
 
 namespace XBuild.AB.ABBrowser
 {
-    public class ABAssetsInfo : AssetsInfo, IEditorTableItemInfo
+    internal class ABAssetsInfo : AssetsInfo, IEditorTableItemInfo
     {
         internal static Color k_LightGrey = Color.grey * 1.5f;
         private MessageSystem.MessageState m_AssetMessages = new MessageSystem.MessageState();

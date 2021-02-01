@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace XBuild.AB.ABBrowser
 {
-    public class ABSettingsPopupContent : PopupWindowContent
+    internal class ABSettingsPopupContent : PopupWindowContent
     {
         class Styles
         {
