@@ -379,7 +379,10 @@ namespace XBuild.AB.ABBrowser
             {
                 if (info.AddDepAB(ab))
                 {
-                    info.depSize += GetABFileSize(ab);
+                    if (!ABConfig.IsCommonAB(ab))
+                    {
+                        info.depSize += GetABFileSize(ab);
+                    }
                     var depInfo = GetOrInitABInfo(ab);
                     depInfo.AddRefAB(info.name);
                     ABInfoDepCountAndSize(info, ab);

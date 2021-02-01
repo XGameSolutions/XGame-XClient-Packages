@@ -128,7 +128,7 @@ namespace XBuild.AB
                 BindingFlags.Static | BindingFlags.NonPublic);
             }
             var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-            if (importer != null)
+            if (importer != null && s_GetWidthAndHeight != null)
             {
                 var args = new object[2] { 0, 0 };
                 s_GetWidthAndHeight.Invoke(importer, args);

@@ -59,6 +59,8 @@ namespace XBuild.AB
         public float ab_dep_single_size_limit_scene = 1f * 1024 * 1024;
         public int common_dep_index_max = 5;
 
+        public string[] common_ab_list = new string[] { "shader" };
+
         public string[] file_suffix_material = new string[] { ".mat" };
         public string[] file_suffix_prefab = new string[] { ".prefab", ".fbx", ".obj" };
         public string[] file_suffix_script = new string[] { ".cs" };
@@ -213,6 +215,15 @@ namespace XBuild.AB
             foreach (var suffix in Instance.file_suffix_exclude)
             {
                 if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
+        }
+
+        public static bool IsCommonAB(string abName)
+        {
+            foreach (var ab in Instance.common_ab_list)
+            {
+                if (ab.Equals(abName)) return true;
             }
             return false;
         }
