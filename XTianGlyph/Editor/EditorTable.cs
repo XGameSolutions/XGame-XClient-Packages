@@ -12,22 +12,22 @@ namespace XTianGlyph
     /// </summary>
     public class EditorTable : TreeView, ITianGlyphPanel
     {
-        public static EditorTable CreateTable(int column)
+        public static EditorTable CreateTable(int column, bool enabelSelectedObject = false)
         {
             var state = TianGlyphUtil.GetDefaultState();
             var mchs = TianGlyphUtil.GetDefaultMCHS(column);
-            return new EditorTable(state, mchs);
+            return new EditorTable(state, mchs, enabelSelectedObject);
         }
 
-        public static EditorTable CreateTable(int column, TreeViewState state)
+        public static EditorTable CreateTable(int column, TreeViewState state, bool enabelSelectedObject = false)
         {
             var mchs = TianGlyphUtil.GetDefaultMCHS(column);
-            return new EditorTable(state, mchs);
+            return new EditorTable(state, mchs, enabelSelectedObject);
         }
 
-        public static EditorTable CreateTable(TreeViewState state, MultiColumnHeaderState mchs)
+        public static EditorTable CreateTable(TreeViewState state, MultiColumnHeaderState mchs, bool enabelSelectedObject = false)
         {
-            return new EditorTable(state, mchs);
+            return new EditorTable(state, mchs, enabelSelectedObject);
         }
 
         private TreeViewItem m_RootItem;
@@ -36,9 +36,10 @@ namespace XTianGlyph
 
         public System.Action<List<IEditorTableItemInfo>> OnSelectionChanged { set { m_OnSelectionChanged = value; } }
 
-        public EditorTable(TreeViewState state, MultiColumnHeaderState mchs) : base(state, new MultiColumnHeader(mchs))
+        public EditorTable(TreeViewState state, MultiColumnHeaderState mchs, bool selectedObjects = false) : base(state, new MultiColumnHeader(mchs))
         {
             showBorder = true;
+            m_SelectedObjects = selectedObjects;
             showAlternatingRowBackgrounds = true;
             multiColumnHeader.sortingChanged += OnSortingChanged;
             m_RootItem = new EditorTableItem();
@@ -56,6 +57,11 @@ namespace XTianGlyph
         public void SetColumnHeader(int column, MultiColumnHeaderState.Column info)
         {
             multiColumnHeader.state.columns[column] = info;
+        }
+
+        public void EnableSelectedObject(bool flag)
+        {
+            m_SelectedObjects = flag;
         }
 
         public void UpdateSelection(IEnumerable<IEditorTableItemInfo> list)
