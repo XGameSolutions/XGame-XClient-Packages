@@ -282,7 +282,7 @@ namespace XBuild.AB.ABBrowser
         {
             if (m_AssetTree != null) return;
             var column = ABAssetsInfo.totalColumn;
-            m_AssetTree = EditorTable.CreateTable(column);
+            m_AssetTree = EditorTable.CreateTable(column, true);
             for (int i = 0; i < column; i++)
             {
                 m_AssetTree.SetColumnHeader(i, ABAssetsInfo.GetColumnHeader(i));
