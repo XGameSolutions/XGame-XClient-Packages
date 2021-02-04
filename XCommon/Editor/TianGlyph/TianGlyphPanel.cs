@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace XTianGlyph
+namespace XCommon.Editor
 {
     /// <summary>
     /// 田字形面板

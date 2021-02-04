@@ -1,0 +1,10 @@
+{
+  "name": "com.monitor1394.xcommon",
+  "displayName": "XCommon",
+  "description": "a common utils for Unity.",
+  "version": "1.0.0",
+  "unity": "2018.3",
+  "dependencies": {},
+  "relatedPackages": {
+  }
+}

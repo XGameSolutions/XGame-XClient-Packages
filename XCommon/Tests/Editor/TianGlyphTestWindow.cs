@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace XTianGlyph.Tests
+namespace XCommon.Editor.Tests
 {
     class TestInfo : IEditorTableItemInfo
     {

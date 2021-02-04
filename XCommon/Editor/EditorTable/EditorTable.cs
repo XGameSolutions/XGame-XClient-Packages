@@ -5,7 +5,7 @@ using UnityEditor.IMGUI.Controls;
 using System.Linq;
 using UnityEditor;
 
-namespace XTianGlyph
+namespace XCommon.Editor
 {
     /// <summary>
     /// 表格

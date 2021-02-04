@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace XTianGlyph
+namespace XCommon.Editor
 {
     public interface IEditorTableItemInfo
     {

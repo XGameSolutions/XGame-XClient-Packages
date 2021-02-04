@@ -5,11 +5,11 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.monitor1394.xtianglyph": "1.0.0"
+        "com.monitor1394.xcommon": "1.0.0"
       }
     },
-    "com.monitor1394.xtianglyph": {
-      "version": "file:XTianGlyph",
+    "com.monitor1394.xcommon": {
+      "version": "file:XCommon",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

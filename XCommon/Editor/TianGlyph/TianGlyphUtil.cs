@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 
-namespace XTianGlyph
+namespace XCommon.Editor
 {
     public static class TianGlyphUtil
     {

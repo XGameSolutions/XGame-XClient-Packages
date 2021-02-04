@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using XTianGlyph;
+using XCommon.Editor;
 
 namespace XBuild.AB.ABBrowser
 {

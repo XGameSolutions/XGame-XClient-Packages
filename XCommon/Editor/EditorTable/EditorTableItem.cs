@@ -1,6 +1,6 @@
 using UnityEditor.IMGUI.Controls;
 
-namespace XTianGlyph
+namespace XCommon.Editor
 {
     class EditorTableItem : TreeViewItem
     {

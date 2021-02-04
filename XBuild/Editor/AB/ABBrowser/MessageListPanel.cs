@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using XBuild.AB;
-using XTianGlyph;
+using XCommon.Editor;
 
 namespace XBuild.AB.ABBrowser
 {
