@@ -7,11 +7,13 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace XBuild.AB
 {
     internal static class ABTool
     {
+        private static Regex s_ABNameFilterRegex = new Regex("[^a-zA-Z0-9_]");
 
         /// <summary>
         /// 自动根据规则设置ABName
@@ -76,7 +78,7 @@ namespace XBuild.AB
             var import = AssetImporter.GetAtPath(path);
             if (import)
             {
-                import.assetBundleName = abName;
+                import.assetBundleName = FilterABName(abName);
                 return true;
             }
             return false;
@@ -92,7 +94,7 @@ namespace XBuild.AB
             var import = AssetImporter.GetAtPath(path);
             if (import && string.IsNullOrEmpty(import.assetBundleName))
             {
-                import.assetBundleName = depABName;
+                import.assetBundleName = FilterABName(depABName);
                 return true;
             }
             return false;
@@ -219,6 +221,11 @@ namespace XBuild.AB
             {
                 SetAB(path, shaderABName);
             }
+        }
+
+        private static string FilterABName(string abName)
+        {
+            return s_ABNameFilterRegex.Replace(abName, "_");
         }
 
         private static void SetDepInfoAB(AssetsInfo info)
