@@ -12,9 +12,14 @@ namespace XCommon.Editor.Tests
         public int test2;
         public float test3;
 
+
         public string displayName { get { return test1; } }
         public int itemId { get { return test1.GetHashCode(); } }
+        public bool itemDisable { get; set; }
         public string assetPath { get; set; }
+        public Texture2D assetIcon { get; set; }
+        public Texture2D assetDisableIcon { get; set; }
+        public List<IEditorTableItemInfo> children { get; set; }
 
         public static int totalColumn { get { return 3; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)
@@ -60,7 +65,7 @@ namespace XCommon.Editor.Tests
         }
     }
 
-    public class TianGlyphTestWindow : EditorWindow
+    public class TianGlyphTestWindow : EditorWindow, ITianGlyphPanelParent
     {
         TianGlyphPanel m_Panel;
 
