@@ -32,9 +32,14 @@ namespace XCommon.Editor
 
         private TreeViewItem m_RootItem;
         private System.Action<List<IEditorTableItemInfo>> m_OnSelectionChanged;
+        private System.Action<IEditorTableItemInfo> m_OnSingleClickedItem;
+        private System.Action<IEditorTableItemInfo> m_OnDoubleClickedItem;
         private bool m_SelectedObjects;
+        public bool showIcon = true;
 
         public System.Action<List<IEditorTableItemInfo>> OnSelectionChanged { set { m_OnSelectionChanged = value; } }
+        public System.Action<IEditorTableItemInfo> OnSingleClickedItem { set { m_OnSingleClickedItem = value; } }
+        public System.Action<IEditorTableItemInfo> OnDoubleClickedItem { set { m_OnDoubleClickedItem = value; } }
 
         public EditorTable(TreeViewState state, MultiColumnHeaderState mchs, bool selectedObjects = false) : base(state, new MultiColumnHeader(mchs))
         {
@@ -82,7 +87,9 @@ namespace XCommon.Editor
         public void UpdateInfoList(IEnumerable<IEditorTableItemInfo> list)
         {
             m_RootItem.children.Clear();
-            AddInfoList(list);
+            AddInfoList(m_RootItem, list);
+            SetSelection(new List<int>());
+            Reload();
         }
 
         public void AddInfo(IEditorTableItemInfo info)
@@ -91,17 +98,22 @@ namespace XCommon.Editor
             Reload();
         }
 
-        public void AddInfoList(IEnumerable<IEditorTableItemInfo> list)
+        private void AddInfoList(TreeViewItem rootItem, IEnumerable<IEditorTableItemInfo> list)
         {
             if (list != null)
             {
                 foreach (var info in list)
                 {
-                    m_RootItem.AddChild(new EditorTableItem(info, m_RootItem.depth + 1));
+                    var child = new EditorTableItem(info, rootItem.depth + 1);
+                    if (info.itemDisable) child.icon = info.assetDisableIcon;
+                    else child.icon = info.assetIcon;
+                    rootItem.AddChild(child);
+                    if (info.children != null && info.children.Count > 0)
+                    {
+                        AddInfoList(child, info.children);
+                    }
                 }
             }
-            SetSelection(new List<int>());
-            Reload();
         }
 
         public override void OnGUI(Rect rect)
@@ -128,10 +140,17 @@ namespace XCommon.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
+            var oldContentColor = GUI.contentColor;
+            var item = args.item as EditorTableItem;
+            if (item.Info.itemDisable)
+            {
+                GUI.contentColor = Color.gray;
+            }
             for (int i = 0; i < args.GetNumVisibleColumns(); i++)
             {
-                CellGUI(args.GetCellRect(i), args.item as EditorTableItem, args.GetColumn(i), ref args);
+                CellGUI(args.GetCellRect(i), item, args.GetColumn(i), ref args);
             }
+            GUI.contentColor = oldContentColor;
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
@@ -161,12 +180,41 @@ namespace XCommon.Editor
             m_OnSelectionChanged?.Invoke(selectedInfo);
         }
 
+        protected override void SingleClickedItem(int id)
+        {
+            var item = FindItem(id, rootItem) as EditorTableItem;
+            m_OnSingleClickedItem?.Invoke(item.Info);
+        }
+
+        protected override void DoubleClickedItem(int id)
+        {
+            var item = FindItem(id, rootItem) as EditorTableItem;
+            m_OnDoubleClickedItem?.Invoke(item.Info);
+        }
+
         private void CellGUI(Rect cellRect, EditorTableItem item, int column, ref RowGUIArgs args)
         {
-            var oldColor = GUI.color;
             CenterRectUsingSingleLineHeight(ref cellRect);
-            DefaultGUI.Label(cellRect, item.Info.GetColumnString(column), args.selected, args.focused);
-            GUI.color = oldColor;
+            if (column == 0)
+            {
+                if (item.hasChildren || item.depth > 0) cellRect.x += 16;
+                if (item.depth > 0) cellRect.x += 14 * item.depth;
+                if (showIcon)
+                {
+                    var iconRect = new Rect(cellRect.x + 1, cellRect.y + 1, cellRect.height - 2, cellRect.height - 2);
+                    if (item.icon != null)
+                    {
+                        GUI.DrawTexture(iconRect, item.icon, ScaleMode.ScaleToFit);
+                    }
+                    cellRect = new Rect(cellRect.x + iconRect.width + 1, cellRect.y,
+                        cellRect.width - iconRect.width, cellRect.height);
+                }
+                DefaultGUI.Label(cellRect, item.Info.GetColumnString(column), args.selected, args.focused);
+            }
+            else
+            {
+                DefaultGUI.Label(cellRect, item.Info.GetColumnString(column), args.selected, args.focused);
+            }
         }
 
         private void OnSortingChanged(MultiColumnHeader header)
