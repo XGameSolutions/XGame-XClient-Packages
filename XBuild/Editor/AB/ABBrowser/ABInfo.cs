@@ -71,7 +71,11 @@ namespace XBuild.AB.ABBrowser
 
         public string displayName { get { return name; } }
         public int itemId { get { return name.GetHashCode(); } }
+        public bool itemDisable { get; set; }
         public string assetPath { get; set; }
+        public Texture2D assetIcon { get; set; }
+        public Texture2D assetDisableIcon { get; set; }
+        public List<IEditorTableItemInfo> children { get { return null; } }
 
         public static int totalColumn { get { return 5; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)

@@ -8,7 +8,7 @@ using XCommon.Editor;
 
 namespace XBuild.AB.ABBrowser
 {
-    internal class ABBrowserWindow : EditorWindow
+    internal class ABBrowserWindow : EditorWindow, ITianGlyphPanelParent
     {
         class Styles
         {
@@ -188,8 +188,8 @@ namespace XBuild.AB.ABBrowser
             var btnWidth = 98;
             m_SelectedSearchIndex = GUILayout.SelectionGrid(m_SelectedSearchIndex, Styles.searchBtns, 2,
                 GUILayout.Width(btnWidth), GUILayout.Height(searchHeight - 2));
-            var rect = new Rect(m_Panel.LeftTopRect.x + btnWidth, m_Panel.LeftTopRect.y - searchHeight + 0.5f,
-                m_Panel.LeftTopRect.width - btnWidth + 2 * m_Panel.SplitterWidth, searchHeight);
+            var rect = new Rect(m_Panel.LeftTopRect.x + btnWidth + 1, m_Panel.LeftTopRect.y - searchHeight - 2f,
+                m_Panel.LeftTopRect.width - btnWidth + m_Panel.SplitterWidth, searchHeight);
             if (m_SelectedSearchIndex == 0)
             {
                 var newSearch = m_SearchField.OnGUI(rect, ABDatabase.abSearchString);

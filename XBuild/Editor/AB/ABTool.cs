@@ -46,16 +46,11 @@ namespace XBuild.AB
         public static void ResetAllDepABNameByAnalyzeDepdencies()
         {
             BuildLog.Log("ResetAllDepABNameByAnalyzeDepdencies ...");
-            ClearAllDepABName(false);
             var depList = ABHelper.GetDepList(ABHelper.GetAllDependencies());
-            foreach (var info in depList)
-            {
-                ClearDepAB(info.path);
-            }
+            ClearAllDepABName(depList);
             SetSceneMaterialABName(ref depList);
             SetScenePrefabABName(ref depList);
             SetDepABName(depList);
-
             SetShaderABName();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -89,7 +84,7 @@ namespace XBuild.AB
         /// </summary>
         /// <param name="path"></param>
         /// <param name="depABName"></param>
-        public static bool SetDepAB(string path, string depABName)
+        public static bool SetABIfEmpty(string path, string depABName)
         {
             var import = AssetImporter.GetAtPath(path);
             if (import && string.IsNullOrEmpty(import.assetBundleName))
@@ -123,30 +118,16 @@ namespace XBuild.AB
             return false;
         }
 
-        public static bool ClearAllDepABName(bool refreshAndSaveAssets)
+        private static void ClearAllDepABName(List<AssetsInfo> depList)
         {
-            var needRefresh = false;
-            foreach (var abName in AssetDatabase.GetAllAssetBundleNames())
+            foreach (var info in depList)
             {
-                if (ABConfig.IsDepABName(abName))
-                {
-                    foreach (var path in AssetDatabase.GetAssetPathsFromAssetBundle(abName))
-                    {
-                        needRefresh |= ClearAB(path);
-                    }
-                    AssetDatabase.RemoveAssetBundleName(abName, true);
-                }
+                ClearDepAB(info.path);
             }
-            if (needRefresh && refreshAndSaveAssets)
-            {
-                AssetDatabase.Refresh();
-                AssetDatabase.SaveAssets();
-            }
-            return true;
         }
 
         /// <summary>
-        /// 场景材质球和它关联的贴图一起单独打AB
+        /// 场景材质球和它关联的贴图一起打AB，如果贴图依赖大于1时，贴图单独打
         /// </summary>
         /// <param name="depList"></param>
         private static void SetSceneMaterialABName(ref List<AssetsInfo> depList)
@@ -169,12 +150,23 @@ namespace XBuild.AB
             {
                 if (info.type != AssetsType.Shader)
                 {
-                    var abName = info.GetFirstRefAB();
-                    SetDepAB(info.path, ABConfig.GetSceneDepMaterialABName(abName));
+                    if (info.refCount > 1)
+                    {
+                        SetABIfEmpty(info.path, info.name.ToLower());
+                    }
+                    else
+                    {
+                        var abName = info.GetFirstRefAB();
+                        SetABIfEmpty(info.path, ABConfig.GetSceneDepMaterialABName(abName));
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// 场景prefab和他管理的fbx一起打
+        /// </summary>
+        /// <param name="depList"></param>
         private static void SetScenePrefabABName(ref List<AssetsInfo> depList)
         {
             var targetList = new List<AssetsInfo>();
@@ -187,7 +179,7 @@ namespace XBuild.AB
                     && info.extension.Equals(".prefab"))
                 {
                     targetList.Add(info);
-                    SetDepAB(info.path, ABConfig.GetSceneDepPrefabABName(info.name));
+                    SetABIfEmpty(info.path, ABConfig.GetSceneDepPrefabABName(info.name));
                     depList.Remove(info);
                 }
             }
@@ -196,8 +188,15 @@ namespace XBuild.AB
             {
                 if (info.type != AssetsType.Shader)
                 {
-                    var abName = info.GetFirstRefAB();
-                    SetDepAB(info.path, ABConfig.GetSceneDepPrefabABName(abName));
+                    if (info.refCount > 1)
+                    {
+                        SetABIfEmpty(info.path, info.name.ToLower());
+                    }
+                    else
+                    {
+                        var abName = info.GetFirstRefAB();
+                        SetABIfEmpty(info.path, ABConfig.GetSceneDepPrefabABName(abName));
+                    }
                 }
             }
         }
@@ -243,7 +242,7 @@ namespace XBuild.AB
                     var abName = ABConfig.GetDepNeedSetABName(info);
                     if (!string.IsNullOrEmpty(abName))
                     {
-                        SetDepAB(info.path, abName);
+                        SetABIfEmpty(info.path, abName);
                     }
                 }
                 else
@@ -253,7 +252,7 @@ namespace XBuild.AB
                         if (info.type == AssetsType.Texture || info.type == AssetsType.Asset)
                         {
                             var abName = info.GetFirstRefAB();
-                            SetDepAB(info.path, ABConfig.GetABNameWithDepSuffix(abName));
+                            SetABIfEmpty(info.path, ABConfig.GetABNameWithDepSuffix(abName));
                         }
                     }
                 }

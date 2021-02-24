@@ -295,6 +295,7 @@ namespace XBuild.AB.ABBrowser
                     type = type,
                     size = size,
                     name = abName,
+                    assetIcon = EditorGUIUtility.IconContent("DefaultAsset Icon").image as Texture2D
                 };
                 s_ABInfoDic[abName] = info;
                 if (!s_ABTypeStat.ContainsKey(ABType.All)) s_ABTypeStat[ABType.All] = new StatInfo();
