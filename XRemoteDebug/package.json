@@ -1,0 +1,12 @@
+{
+  "name": "com.monitor1394.xremotedebug",
+  "displayName": "XRemoteDebug",
+  "description": "一款Unity远程Debug工具，可在Editor上直连Phone端，进行Patch热更，日志查看等.",
+  "version": "1.0.0",
+  "unity": "2018.3",
+  "dependencies": {
+    "com.monitor1394.xcommon": "1.0.0"
+  },
+  "relatedPackages": {
+  }
+}

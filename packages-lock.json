@@ -14,6 +14,14 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "com.monitor1394.xremotedebug": {
+      "version": "file:XRemoteDebug",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.monitor1394.xcommon": "1.0.0"
+      }
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,

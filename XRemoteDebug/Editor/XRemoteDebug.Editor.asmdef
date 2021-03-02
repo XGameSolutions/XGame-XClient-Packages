@@ -1,0 +1,19 @@
+{
+    "name": "XRemoteDebug.Editor",
+    "references": [
+        "XRemoteDebug.Runtime",
+        "XCommon.Editor",
+        "XCommon.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
