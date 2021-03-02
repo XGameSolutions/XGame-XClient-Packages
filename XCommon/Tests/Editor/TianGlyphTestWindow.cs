@@ -16,6 +16,7 @@ namespace XCommon.Editor.Tests
         public string displayName { get { return test1; } }
         public int itemId { get { return test1.GetHashCode(); } }
         public bool itemDisable { get; set; }
+        public bool itemSelected { get; set; }
         public string assetPath { get; set; }
         public Texture2D assetIcon { get; set; }
         public Texture2D assetDisableIcon { get; set; }
@@ -73,7 +74,7 @@ namespace XCommon.Editor.Tests
         TestPanel m_LTPanel;
 
 
-        [MenuItem("XTianGlyph/TianGlyphDemo")]
+        [MenuItem("X/XTianGlyph/TianGlyphDemo")]
         static void ShowWindow()
         {
             var window = GetWindow<TianGlyphTestWindow>();

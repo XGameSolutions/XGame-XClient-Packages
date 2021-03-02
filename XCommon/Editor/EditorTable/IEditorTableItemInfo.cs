@@ -9,6 +9,7 @@ namespace XCommon.Editor
     {
         int itemId { get; }
         bool itemDisable { get; }
+        bool itemSelected { get; }
         string displayName { get; }
         string assetPath { get; }
         Texture2D assetIcon { get; }

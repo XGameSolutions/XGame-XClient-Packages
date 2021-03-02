@@ -12,6 +12,10 @@ namespace XCommon.Editor
     /// </summary>
     public class EditorTable : TreeView, ITianGlyphPanel
     {
+        class Styles
+        {
+            public static readonly Texture selected = EditorGUIUtility.IconContent("d_FilterSelectedOnly").image;
+        }
         public static EditorTable CreateTable(int column, bool enabelSelectedObject = false)
         {
             var state = TianGlyphUtil.GetDefaultState();
@@ -197,6 +201,12 @@ namespace XCommon.Editor
             CenterRectUsingSingleLineHeight(ref cellRect);
             if (column == 0)
             {
+                if (item.Info.itemSelected)
+                {
+                    var iconRect = new Rect(cellRect.x + 1, cellRect.y + 1, cellRect.height - 2, cellRect.height - 2);
+                    GUI.DrawTexture(iconRect, Styles.selected, ScaleMode.ScaleToFit);
+                    cellRect.x += cellRect.height - 2;
+                }
                 if (item.hasChildren || item.depth > 0) cellRect.x += 16;
                 if (item.depth > 0) cellRect.x += 14 * item.depth;
                 if (showIcon)
