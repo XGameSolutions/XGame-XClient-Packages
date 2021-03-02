@@ -1,7 +1,7 @@
 {
     "name": "XBuild.Editor",
     "references": [
-        "GUID:60ed3677fc9474889bb3d7f186acbf91"
+        "XCommon.Editor"
     ],
     "includePlatforms": [
         "Editor"

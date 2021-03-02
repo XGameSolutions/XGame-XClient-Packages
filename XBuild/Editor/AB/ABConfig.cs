@@ -17,7 +17,7 @@ namespace XBuild.AB
     {
         private static ABConfig s_Instance;
         public const string configName = "ABConfig";
-        public const string configPath = "Assets/XBuild/Editor/Resources/ABConfig.asset";
+        public const string configPath = "Assets/XPlugins/XBuild/Editor/Resources/ABConfig.asset";
         public string AB_DIR = "../ResAB";
         public string dep = "_dep_";
         public string ab_prefix_shader = "shader";
@@ -80,7 +80,7 @@ namespace XBuild.AB
                 if (s_Instance == null)
                 {
                     s_Instance = ScriptableObject.CreateInstance("ABConfig") as ABConfig;
-                    CommonUtil.CheckAndCreateDir(Application.dataPath, "XBuild/Editor/Resources/");
+                    CommonUtil.CheckAndCreateDir(Application.dataPath, "XPlugins/XBuild/Editor/Resources/");
                     AssetDatabase.CreateAsset(s_Instance, ABConfig.configPath);
                 }
                 return s_Instance;

@@ -17,7 +17,7 @@ namespace XBuild
     public class BuildConfig : ScriptableObject
     {
         public const string configName = "BuildConfig";
-        public const string configPath = "Assets/XBuild/Editor/Resources/BuildConfig.asset";
+        public const string configPath = "Assets/XPlugins/XBuild/Editor/Resources/BuildConfig.asset";
         [SerializeField] private string m_CodeName = "xgame";
         [SerializeField] private string m_ABDir = "ResAB/";
         [SerializeField] private string m_ABDirRelativeToDataPath = "/../ResAB/";
@@ -53,7 +53,7 @@ namespace XBuild
                     if (s_Instance == null)
                     {
                         s_Instance = ScriptableObject.CreateInstance(configName) as BuildConfig;
-                        CommonUtil.CheckAndCreateDir(Application.dataPath, "XBuild/Editor/Resources/");
+                        CommonUtil.CheckAndCreateDir(Application.dataPath, "XPlugins/XBuild/Editor/Resources/");
                         AssetDatabase.CreateAsset(s_Instance, BuildConfig.configPath);
                     }
                 }

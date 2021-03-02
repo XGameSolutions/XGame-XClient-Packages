@@ -20,10 +20,9 @@ namespace XBuild.AB.ABBrowser
         Dep
     }
 
-    internal class ABInfo : IEditorTableItemInfo
+    internal class ABInfo : EditorTableBaseItemInfo
     {
         public ABType type;
-        public string name;
         public long size;
         public long depSize;
         private List<string> m_DepABList = new List<string>();
@@ -69,13 +68,9 @@ namespace XBuild.AB.ABBrowser
         public int depCount { get { return m_DepABList.Count; } }
         public int refCount { get { return m_RefABList.Count; } }
 
-        public string displayName { get { return name; } }
-        public int itemId { get { return name.GetHashCode(); } }
-        public bool itemDisable { get; set; }
-        public string assetPath { get; set; }
-        public Texture2D assetIcon { get; set; }
-        public Texture2D assetDisableIcon { get; set; }
-        public List<IEditorTableItemInfo> children { get { return null; } }
+        public override string displayName { get { return name; } }
+        public override int itemId { get { return name.GetHashCode(); } }
+        public override List<IEditorTableItemInfo> children { get { return null; } }
 
         public static int totalColumn { get { return 5; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)
@@ -92,7 +87,7 @@ namespace XBuild.AB.ABBrowser
             }
         }
 
-        public string GetColumnString(int column)
+        public override string GetColumnString(int column)
         {
             switch (column)
             {
@@ -105,7 +100,7 @@ namespace XBuild.AB.ABBrowser
                 default: return "unkown:" + column;
             }
         }
-        public object GetColumnOrder(int column)
+        public override object GetColumnOrder(int column)
         {
             switch (column)
             {

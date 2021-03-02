@@ -58,7 +58,7 @@ namespace XBuild.AB.ABBrowser
         private List<ABInfo> m_SelectedABInfos;
 
 
-        [MenuItem("XBuild/AB-Browser")]
+        [MenuItem("X/XBuild/AB-Browser")]
         static void ShowWindow()
         {
             s_Instance = null;

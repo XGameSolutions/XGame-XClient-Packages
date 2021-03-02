@@ -42,7 +42,7 @@ namespace XBuild.AB
         /// <summary>
         /// 重新分析依赖并设置ABName
         /// </summary>
-        [MenuItem("XBuild/AB-AutoResetDepABName")]
+        [MenuItem("X/XBuild/AB-AutoResetDepABName")]
         public static void ResetAllDepABNameByAnalyzeDepdencies()
         {
             BuildLog.Log("ResetAllDepABNameByAnalyzeDepdencies ...");
