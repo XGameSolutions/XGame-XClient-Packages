@@ -188,7 +188,7 @@ namespace XRemoteDebug
 
         private void HandleMsg(RemoteDebugClientInfo client, string msg)
         {
-            Debug.Log("HandleMsg:" + msg);
+            //Debug.Log("HandleMsg:" + msg);
             var temp = msg.Split('#');
             if (temp.Length < 2)
             {
@@ -238,7 +238,7 @@ namespace XRemoteDebug
 
         private void MsgInfo(RemoteDebugClientInfo client, string info)
         {
-            Debug.Log("MsgInfo:" + info);
+            // Debug.Log("MsgInfo:" + info);
             var temp = info.Split('|');
             var os = temp[1];
             var platform = (RuntimePlatform)int.Parse(temp[2]);
@@ -262,7 +262,7 @@ namespace XRemoteDebug
 
         private void MsgRootObjects(RemoteDebugClientInfo client, string info)
         {
-            Debug.Log("MsgRootObjects:" + info);
+            //Debug.Log("MsgRootObjects:" + info);
             var temp = info.Split('|');
             var root = temp[0];
             var name = temp[1];
@@ -289,7 +289,7 @@ namespace XRemoteDebug
             var path = temp[0];
             var name = temp[1];
             var active = bool.Parse(temp[2]);
-            Debug.Log("MsgSubObjects:" + path + "," + name);
+            //Debug.Log("MsgSubObjects:" + path + "," + name);
             if (!client.objectDic.ContainsKey(path))
             {
                 var parent = new HierarchyItemInfo(path, path);
@@ -334,13 +334,11 @@ namespace XRemoteDebug
             var temp = content.Split('|');
             var fileName = temp[0];
             var flag = temp[1] == "0";
-            //Debug.LogError("MsgPatchUploadEnd:" + fileName);
             RemoteDebugWindow.Instance.UploadFileSuccess(flag, fileName);
         }
 
         private void MsgPatchUpload(RemoteDebugClientInfo client, string content)
         {
-            //Debug.LogError("MsgPatchUpload:" + content);
             var temp = content.Split('|');
             var fileName = temp[0];
             var fileSize = int.Parse(temp[1]);

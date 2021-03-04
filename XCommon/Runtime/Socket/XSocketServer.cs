@@ -116,13 +116,13 @@ namespace XCommon.Runtime
         private void OnClientReceive(XSocket socket, byte[] buffer, int len)
         {
             var content = System.Text.Encoding.UTF8.GetString(buffer, 0, len);
-            Debug.Log("[server] receive:" + socket.Index + "," + content);
+            //Debug.Log("[server] receive:" + socket.Index + "," + content);
             OnClientReceiveCallback?.Invoke(socket.Index, content);
         }
 
         private void OnClientClose(XSocket socket)
         {
-            Debug.Log("[server] close:" + socket.Index);
+            //Debug.Log("[server] close:" + socket.Index);
             OnClientCloseCallback?.Invoke(socket.Index);
         }
     }

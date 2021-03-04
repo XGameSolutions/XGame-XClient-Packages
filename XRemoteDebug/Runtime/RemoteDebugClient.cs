@@ -428,7 +428,6 @@ namespace XRemoteDebug
             m_ReceiveFile = true;
             m_ReceiveFilePath = m_CurrentFolderPath + "/" + m_ReceiveFileName;
             m_ReceiveFileStream = new FileStream(m_ReceiveFilePath, FileMode.Create);
-            Debug.LogError("HandleMsg_Patch_LocalUploadStart:" + content);
         }
 
         private bool IsSearchFileName(string fileName)

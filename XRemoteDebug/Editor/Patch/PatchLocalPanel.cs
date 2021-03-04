@@ -280,13 +280,12 @@ namespace XRemoteDebug
                 EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width * progress, rect.height), fcolor);
                 GUI.Label(rect, string.Format("{0} / {1}, {2} / {3}",
                     EditorUtility.FormatBytes(currSize), EditorUtility.FormatBytes(m_UploadTotalSize),
-                     m_UploadCurrCount, m_UploadTotalCount));
+                    m_UploadCurrCount, m_UploadTotalCount));
 
                 var time = ((m_IsUploaded ? m_UploadEndTick : DateTime.Now.Ticks) - m_UploadStartTick) / 10000000;
                 var speed = time == 0 ? 0 : currSize / time;
                 Styles.speedStyle.alignment = TextAnchor.MiddleRight;
-                GUI.Label(rect, string.Format("{0}/s, {1}/s {2}", EditorUtility.FormatBytes(speed),
-                    EditorUtility.FormatBytes(m_UploadRemoteSpeed),
+                GUI.Label(rect, string.Format("{0}/s, {1}", EditorUtility.FormatBytes(m_UploadRemoteSpeed),
                     XTimeUtil.FormatTime(time)), Styles.speedStyle);
             }
             else

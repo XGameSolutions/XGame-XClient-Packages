@@ -283,11 +283,11 @@ namespace XCommon.Runtime
 
         private void SocketLog(string log)
         {
-            Debug.LogFormat("[{0}] {1}", Name, log);
+            //Debug.LogFormat("[{0}] {1}", Name, log);
         }
         private void SocketLog(object log)
         {
-            Debug.LogFormat("[{0}] {1}", Name, log.ToString());
+            //Debug.LogFormat("[{0}] {1}", Name, log.ToString());
         }
 
         private void SocketLogError(string log)
