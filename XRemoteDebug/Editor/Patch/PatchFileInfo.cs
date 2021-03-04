@@ -18,6 +18,11 @@ namespace XRemoteDebug
             return size == 0 ? "--" : EditorUtility.FormatBytes(size);
         }
 
+        public override string ToString()
+        {
+            return name;
+        }
+
         #region IEditorTableItemInfo
         public override int itemId { get { return name.GetHashCode(); } }
 

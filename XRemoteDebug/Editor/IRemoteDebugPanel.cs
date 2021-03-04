@@ -6,5 +6,6 @@ namespace XRemoteDebug
     {
         void OnEnable();
         void Update();
+        ITianGlyphPanel GetStatusPanel();
     }
 }

@@ -76,9 +76,8 @@ namespace XCommon.Editor
             set { m_VertialRightPercent = value < 0 ? 0 : (value > 1 ? 1 : value); }
         }
 
-        public TianGlyphPanel(ITianGlyphPanelParent parent, bool borderGap = true)
+        public TianGlyphPanel(bool borderGap = true)
         {
-            m_Parent = parent;
             m_NeedBorderGap = borderGap;
             m_HorizontalPercent = 0.4f;
             m_VertialLeftPercent = 0.7f;
@@ -103,8 +102,9 @@ namespace XCommon.Editor
             );
         }
 
-        public void OnEnable()
+        public void OnEnable(ITianGlyphPanelParent parent)
         {
+            m_Parent = parent;
             m_PanelInfos = new PanelInfo[4]{
                 new PanelInfo(),
                 new PanelInfo(),
@@ -186,7 +186,10 @@ namespace XCommon.Editor
 
             if (m_HorzontalResizing || m_VertialLeftResizing || m_VertialRightResizing)
             {
-                m_Parent.Repaint();
+                if(m_Parent != null)
+                    m_Parent.Repaint();
+                else
+                    Debug.LogError("parent is null");
             }
             //var color = Color.gray;
             //color.a = 0.3f;

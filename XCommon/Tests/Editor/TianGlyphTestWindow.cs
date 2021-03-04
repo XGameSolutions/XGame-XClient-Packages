@@ -86,9 +86,9 @@ namespace XCommon.Editor.Tests
         {
             if (m_Panel == null)
             {
-                m_Panel = new TianGlyphPanel(this);
+                m_Panel = new TianGlyphPanel();
             }
-            m_Panel.OnEnable();
+            m_Panel.OnEnable(this);
         }
 
         int count = 0;

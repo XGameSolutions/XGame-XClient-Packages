@@ -72,9 +72,9 @@ namespace XBuild.AB.ABBrowser
             var panelPos = GetPanelArea();
             if (m_Panel == null)
             {
-                m_Panel = new TianGlyphPanel(this);
+                m_Panel = new TianGlyphPanel();
             }
-            m_Panel.OnEnable();
+            m_Panel.OnEnable(this);
             m_RefreshTexture = new GUIContent(EditorGUIUtility.FindTexture("Refresh"), "Refresh AB list");
             m_StandaloneTexture = new GUIContent(EditorGUIUtility.FindTexture("BuildSettings.Standalone@2x"), "PC AB");
             m_IOSTexture = new GUIContent(EditorGUIUtility.FindTexture("BuildSettings.iPhone@2x"), "iOS AB");

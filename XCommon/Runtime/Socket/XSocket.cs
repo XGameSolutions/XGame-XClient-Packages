@@ -10,7 +10,7 @@ namespace XCommon.Runtime
 {
     public class XSocket
     {
-        private const int BUF_SIZE = 1024;
+        private const int BUF_SIZE = 1024 * 64;
         private string m_Name;
         private Socket m_Socket;
         private string m_IP;
@@ -49,6 +49,8 @@ namespace XCommon.Runtime
             var endPoint = new IPEndPoint(addr, m_Port);
             m_Socket.Bind(endPoint);
             m_Socket.Listen(maxConn);
+            m_Socket.SendBufferSize = BUF_SIZE;
+            m_Socket.ReceiveBufferSize = BUF_SIZE;
             m_Socket.BeginAccept(onAccept == null ? OnAccept : onAccept, m_Socket);
         }
 
@@ -58,6 +60,8 @@ namespace XCommon.Runtime
             m_Port = port;
             IsUse = true;
             m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            m_Socket.SendBufferSize = BUF_SIZE;
+            m_Socket.ReceiveBufferSize = BUF_SIZE;
             var addr = IPAddress.Parse(m_IP);
             var endPoint = new IPEndPoint(addr, m_Port);
             try

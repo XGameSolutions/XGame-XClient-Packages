@@ -14,6 +14,11 @@ namespace XRemoteDebug
             m_Window = window;
         }
 
+        public ITianGlyphPanel GetStatusPanel()
+        {
+            return null;
+        }
+
         public void OnEnable()
         {
             var client = RemoteDebugWindow.Instance.selectedClient;

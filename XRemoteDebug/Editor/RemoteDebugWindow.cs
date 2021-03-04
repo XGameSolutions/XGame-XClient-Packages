@@ -62,6 +62,11 @@ namespace XRemoteDebug
             if (m_SelectedTab == DebugTab.Patch)
                 (m_TabPanels[(int)DebugTab.Patch] as PatchPanel).UploadNextFile(flag, fileName);
         }
+        public void FileUploading(string fileName, int size, int speed)
+        {
+            if (m_SelectedTab == DebugTab.Patch)
+                (m_TabPanels[(int)DebugTab.Patch] as PatchPanel).FileUploading(fileName, size, speed);
+        }
 
         private void OnEnable()
         {
@@ -70,9 +75,9 @@ namespace XRemoteDebug
 
             if (m_Panel == null)
             {
-                m_Panel = new TianGlyphPanel(this);
+                m_Panel = new TianGlyphPanel();
             }
-            m_Panel.OnEnable();
+            m_Panel.OnEnable(this);
 
             if (m_TabPanels == null)
             {
@@ -159,6 +164,10 @@ namespace XRemoteDebug
         {
             m_Panel.SetRightTopPanel(m_TabPanels[(int)m_SelectedTab], false, k_AssetsToolbarHeight);
             m_TabPanels[(int)m_SelectedTab].OnEnable();
+
+            var statusPanel = m_TabPanels[(int)m_SelectedTab].GetStatusPanel();
+            if (statusPanel != null)
+                m_Panel.SetRigthBottomPanel(statusPanel, true);
         }
 
         private void OnGUIPanel()

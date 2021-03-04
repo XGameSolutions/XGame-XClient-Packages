@@ -137,7 +137,7 @@ namespace XRemoteDebug
         public void RequestPatchUploadFile(int clientIndex, string filePath)
         {
             if (!m_ClientDic.ContainsKey(clientIndex)) return;
-            m_Server.SendFileToClient(clientIndex, filePath);
+            m_Server.SendFileToClient(clientIndex, filePath, RemoteDebugConfig.socketUploadFileBufferSize);
         }
 
         public void Update()
@@ -282,6 +282,7 @@ namespace XRemoteDebug
             client.objectDic[root].children.Add(chdInfo);
             m_IsClientObjectsDirty = true;
         }
+
         private void MsgSubObjects(RemoteDebugClientInfo client, string content)
         {
             var temp = content.Split('|');
@@ -333,16 +334,18 @@ namespace XRemoteDebug
             var temp = content.Split('|');
             var fileName = temp[0];
             var flag = temp[1] == "0";
-            Debug.LogError("MsgPatchUploadEnd:" + fileName);
+            //Debug.LogError("MsgPatchUploadEnd:" + fileName);
             RemoteDebugWindow.Instance.UploadFileSuccess(flag, fileName);
         }
 
         private void MsgPatchUpload(RemoteDebugClientInfo client, string content)
         {
+            //Debug.LogError("MsgPatchUpload:" + content);
             var temp = content.Split('|');
             var fileName = temp[0];
             var fileSize = int.Parse(temp[1]);
-            Debug.LogError("MsgPatchUpload:" + fileName + "," + fileSize);
+            var speed = int.Parse(temp[2]);
+            RemoteDebugWindow.Instance.FileUploading(fileName, fileSize, speed);
         }
     }
 }

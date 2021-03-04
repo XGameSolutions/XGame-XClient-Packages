@@ -23,6 +23,7 @@ namespace XRemoteDebug
         private string m_RemotePath;
         private SearchField m_SearchField;
         private string m_SearchText;
+        private List<PatchFileInfo> m_SelectedFileInfos = new List<PatchFileInfo>();
 
         private RemoteDebugServer server
         {
@@ -47,13 +48,13 @@ namespace XRemoteDebug
             }
         }
 
-        public PatchRemotePanel(PatchPanel parent)
+        public PatchRemotePanel()
         {
-            m_Parent = parent;
         }
 
-        public void OnEnable()
+        public void OnEnable(PatchPanel parent)
         {
+            m_Parent = parent;
             if (m_SearchField == null) m_SearchField = new SearchField();
             server?.RequestPatchFiles(clientIndex);
         }
@@ -105,22 +106,18 @@ namespace XRemoteDebug
             }
             if (GUI.Button(new Rect(rect.x + (index++) * (btnWid + btnGap), rect.y, btnWid, rect.height), Styles.btnDelete))
             {
-                var list = new List<string>();
-                if (client != null)
-                {
-                    foreach (var info in client.remotePatchFileList) if (info.itemSelected) list.Add(info.name);
-                    if (list.Count <= 0)
+                    if (m_SelectedFileInfos.Count <= 0)
                     {
                         RemoteDebugWindow.Instance.ShowNotification(new GUIContent("no selected files."));
                     }
                     else
                     {
-                        if (EditorUtility.DisplayDialog("Delete selected files", "Delete all selected files?", "Sure", "Cancel"))
+                        var files = string.Join("\n", m_SelectedFileInfos);
+                        if (EditorUtility.DisplayDialog("Delete selected files", "Delete all selected files?\n"+files, "Sure", "Cancel"))
                         {
-                            server?.RequestPatchDelete(clientIndex,string.Join("|", list));
+                            server?.RequestPatchDelete(clientIndex,string.Join("|", m_SelectedFileInfos));
                         }
                     }
-                }
             }
             if (GUI.Button(new Rect(rect.x + (index++) * (btnWid + btnGap), rect.y, btnWid, rect.height), Styles.btnCancel))
             {
@@ -170,6 +167,19 @@ namespace XRemoteDebug
 
         private void OnSelectedFileList(List<IEditorTableItemInfo> infoList)
         {
+            
+            m_SelectedFileInfos.Clear();
+            if (infoList != null)
+            {
+                foreach (var info in infoList)
+                {
+                    var fileInfo = info as PatchFileInfo;
+                    if (fileInfo.type == 2)
+                    {
+                        m_SelectedFileInfos.Add(fileInfo);
+                    }
+                }
+            }
         }
 
         private void OnDoubleClickedItem(IEditorTableItemInfo item)
@@ -186,7 +196,7 @@ namespace XRemoteDebug
                         server?.RequestPatchOpenFolder(clientIndex, info.name);
                         break;
                     case 2:
-                        info.itemSelected = !info.itemSelected;
+                        //info.itemSelected = !info.itemSelected;
                         break;
                 }
             }

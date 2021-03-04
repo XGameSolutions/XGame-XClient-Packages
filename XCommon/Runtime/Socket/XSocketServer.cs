@@ -58,12 +58,12 @@ namespace XCommon.Runtime
             }
         }
 
-        public void SendFileToClient(int clientIndex, string filePath)
+        public void SendFileToClient(int clientIndex, string filePath, int bufferSize)
         {
             if (clientIndex >= 0 && clientIndex < m_Clients.Count)
             {
                 var client = m_Clients[clientIndex];
-                client.SendFile(filePath);
+                client.SendFile(filePath, bufferSize);
             }
         }
 

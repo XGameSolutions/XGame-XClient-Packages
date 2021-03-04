@@ -180,6 +180,7 @@ namespace XRemoteDebug
             m_MsgList.RemoveAt(0);
             if (m_ReceiveFile)
             {
+                m_LastSpeedByte += bytes.Length;
                 m_ReceiveFileStream.Write(bytes, 0, bytes.Length);
                 m_ReceiveFileStream.Flush();
                 return;
@@ -232,32 +233,43 @@ namespace XRemoteDebug
         }
 
         private float m_LastCheckTime = 0;
+        private float m_LastSpeedTime = 0;
+        private int m_LastSpeedByte = 0;
+        private int m_ReceiveSpeed = 0;
         private void HandleReceiveFile()
         {
             if (!m_ReceiveFile) return;
-            if (Time.time - m_LastCheckTime < 0.5) return;
-            m_LastCheckTime = Time.time;
-            var currSize = RemoteDebugUtil.GetFileSize(m_ReceiveFilePath);
-            if (currSize == m_ReceiveFileSize)
+            if (Time.time - m_LastSpeedTime >= 1)
             {
-                m_ReceiveFileStream.Flush();
-                m_ReceiveFileStream.Close();
-                m_ReceiveFile = false;
-                var md5 = RemoteDebugUtil.GetFileMd5(m_ReceiveFilePath);
-                if (md5.Equals(m_ReceiveFileMd5))
+                m_LastSpeedTime = Time.time;
+                m_ReceiveSpeed = m_LastSpeedByte;
+                m_LastSpeedByte = 0;
+            }
+            if (Time.time - m_LastCheckTime > 0.1f)
+            {
+                m_LastCheckTime = Time.time;
+                var currSize = RemoteDebugUtil.GetFileSize(m_ReceiveFilePath);
+                if (currSize == m_ReceiveFileSize)
                 {
-                    HandleMsg_Patch_GetFileList();
-                    m_Client.Send(string.Format("{0}#{1}|{2}$", (int)RemoteDebugMsg.Patch_LocalUploadEnd, m_ReceiveFileName, 0));
+                    m_ReceiveFileStream.Flush();
+                    m_ReceiveFileStream.Close();
+                    m_ReceiveFile = false;
+                    var md5 = RemoteDebugUtil.GetFileMd5(m_ReceiveFilePath);
+                    if (md5.Equals(m_ReceiveFileMd5))
+                    {
+                        HandleMsg_Patch_GetFileList();
+                        m_Client.Send(string.Format("{0}#{1}|{2}$", (int)RemoteDebugMsg.Patch_LocalUploadEnd, m_ReceiveFileName, 0));
+                    }
+                    else
+                    {
+                        m_Client.Send(string.Format("{0}#{1}|{2}$", (int)RemoteDebugMsg.Patch_LocalUploadEnd, m_ReceiveFileName, 1));
+                    }
                 }
                 else
                 {
-                    Debug.LogError("md5 check error:" + m_ReceiveFileName);
-                    m_Client.Send(string.Format("{0}#{1}|{2}$", (int)RemoteDebugMsg.Patch_LocalUploadEnd, m_ReceiveFileName, 1));
+                    m_Client.Send(string.Format("{0}#{1}|{2}|{3}$",
+                        (int)RemoteDebugMsg.Patch_LocalUpload, m_ReceiveFileName, currSize, m_ReceiveSpeed));
                 }
-            }
-            else
-            {
-                m_Client.Send(string.Format("{0}#{1}|{2}$", (int)RemoteDebugMsg.Patch_LocalUpload, m_ReceiveFileName, currSize));
             }
         }
 

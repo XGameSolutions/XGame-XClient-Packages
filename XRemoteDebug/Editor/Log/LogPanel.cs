@@ -1,4 +1,5 @@
 using UnityEngine;
+using XCommon.Editor;
 
 namespace XRemoteDebug
 {
@@ -9,6 +10,11 @@ namespace XRemoteDebug
         public LogPanel(RemoteDebugWindow window)
         {
             m_Window = window;
+        }
+
+        public ITianGlyphPanel GetStatusPanel()
+        {
+            return null;
         }
 
         public void OnEnable()

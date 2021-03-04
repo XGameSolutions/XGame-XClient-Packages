@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 using XCommon.Runtime;
 
@@ -43,8 +42,10 @@ namespace XRemoteDebug
                     if (s_Instance == null)
                     {
                         s_Instance = ScriptableObject.CreateInstance(configName) as RemoteDebugConfig;
+#if UNITY_EDITOR
                         XFileUtil.CheckAndCreateDir(Application.dataPath, "XPlugins/XRemoteDebug/Resources");
-                        AssetDatabase.CreateAsset(s_Instance, RemoteDebugConfig.configPath);
+                        UnityEditor.AssetDatabase.CreateAsset(s_Instance, RemoteDebugConfig.configPath);
+#endif
                     }
                 }
                 return s_Instance;
@@ -56,6 +57,8 @@ namespace XRemoteDebug
         [SerializeField] private float m_ClientY = 10;
         [SerializeField] private float m_ClientWidth = 100;
         [SerializeField] private float m_ClientHeight = 50;
+        [SerializeField] private int m_SocketUploadFileBufferSize = 1024 * 1024;
+
 
         [SerializeField] private int m_Port = 6666;
         [SerializeField]
@@ -69,6 +72,7 @@ namespace XRemoteDebug
         public static Rect clientRect { get { return new Rect(Instance.m_ClientX, Instance.m_ClientY, Instance.m_ClientWidth, Instance.m_ClientHeight); } }
         public static int port { get { return Instance.m_Port; } }
         public static ServerInfo[] serverList { get { return Instance.m_ServerInfos; } }
+        public static int socketUploadFileBufferSize { get { return Instance.m_SocketUploadFileBufferSize; } }
 
     }
 }
