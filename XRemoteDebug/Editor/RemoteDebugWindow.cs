@@ -62,7 +62,7 @@ namespace XRemoteDebug
             if (m_SelectedTab == DebugTab.Patch)
                 (m_TabPanels[(int)DebugTab.Patch] as PatchPanel).UploadNextFile(flag, fileName);
         }
-        public void FileUploading(string fileName, int size, int speed)
+        public void FileUploading(string fileName, long size, int speed)
         {
             if (m_SelectedTab == DebugTab.Patch)
                 (m_TabPanels[(int)DebugTab.Patch] as PatchPanel).FileUploading(fileName, size, speed);

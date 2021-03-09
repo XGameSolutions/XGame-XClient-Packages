@@ -34,15 +34,15 @@ namespace XRemoteDebug
         private string m_SearchText;
         private List<PatchFileInfo> m_FileList = new List<PatchFileInfo>();
         private List<PatchFileInfo> m_WaitingUploadFileInfos = new List<PatchFileInfo>();
-        private int m_FileTotalSize;
+        private long m_FileTotalSize;
         private int m_FileTotalCount;
-        private int m_FileSelectedSize;
+        private long m_FileSelectedSize;
         private int m_FileSelectedCount;
 
-        private int m_UploadTotalSize;
+        private long m_UploadTotalSize;
         private int m_UploadTotalCount;
-        private int m_UploadCurrSize;
-        private int m_UploadFileSize;
+        private long m_UploadCurrSize;
+        private long m_UploadFileSize;
         private int m_UploadCurrCount;
         private long m_UploadStartTick;
         private long m_UploadEndTick;
@@ -161,7 +161,7 @@ namespace XRemoteDebug
             m_IsUploading = true;
         }
 
-        public void FileUploading(string fileName, int size, int speed)
+        public void FileUploading(string fileName, long size, int speed)
         {
             m_UploadCurrSize = size;
             m_UploadRemoteSpeed = speed;

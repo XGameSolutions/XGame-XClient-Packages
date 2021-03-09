@@ -89,7 +89,7 @@ namespace XRemoteDebug
             m_Logs.Add(log);
         }
 
-        public void UpdateLogSize(string filePath, int currSize)
+        public void UpdateLogSize(string filePath, long currSize)
         {
             var log = GetLog(filePath);
             if (log == null)

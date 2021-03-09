@@ -12,7 +12,6 @@ namespace XRemoteDebug
         private class IconStyles
         {
             public static readonly Texture2D iconGameObject = EditorGUIUtility.IconContent("GameObject Icon").image as Texture2D;
-            public static readonly Texture2D iconGameObjectOn = EditorGUIUtility.IconContent("d_GameObject Icon").image as Texture2D;
         }
         private XSocketServer<RemoteDebugClientInfo> m_Server;
         private Dictionary<int, RemoteDebugClientInfo> m_ClientDic = new Dictionary<int, RemoteDebugClientInfo>();
@@ -275,9 +274,8 @@ namespace XRemoteDebug
                 client.objectList.Add(objInfo);
             }
             var chdInfo = new HierarchyItemInfo(name, name);
-            chdInfo.itemDisable = !active;
+            chdInfo.itemDisabled = !active;
             chdInfo.assetIcon = IconStyles.iconGameObject;
-            chdInfo.assetDisableIcon = IconStyles.iconGameObjectOn;
             client.objectDic[name] = chdInfo;
             client.objectDic[root].children.Add(chdInfo);
             m_IsClientObjectsDirty = true;
@@ -289,18 +287,17 @@ namespace XRemoteDebug
             var path = temp[0];
             var name = temp[1];
             var active = bool.Parse(temp[2]);
+            var parentActive = bool.Parse(temp[3]);
             //Debug.Log("MsgSubObjects:" + path + "," + name);
             if (!client.objectDic.ContainsKey(path))
             {
                 var parent = new HierarchyItemInfo(path, path);
                 parent.assetIcon = IconStyles.iconGameObject;
-                parent.assetDisableIcon = IconStyles.iconGameObjectOn;
                 client.objectDic[path] = parent;
             }
             var child = new HierarchyItemInfo(name, path + "/" + name);
-            child.itemDisable = !active;
+            child.itemDisabled = !parentActive;
             child.assetIcon = IconStyles.iconGameObject;
-            child.assetDisableIcon = IconStyles.iconGameObjectOn;
             client.objectDic[child.path] = child;
             client.objectDic[path].children.Add(child);
         }
@@ -310,7 +307,7 @@ namespace XRemoteDebug
             var temp = content.Split('|');
             var type = int.Parse(temp[0]);
             var name = temp[1];
-            var size = int.Parse(temp[2]);
+            var size = long.Parse(temp[2]);
             var time = temp[3];
             client.remotePatchFileList.Add(new PatchFileInfo()
             {
@@ -341,7 +338,7 @@ namespace XRemoteDebug
         {
             var temp = content.Split('|');
             var fileName = temp[0];
-            var fileSize = int.Parse(temp[1]);
+            var fileSize = long.Parse(temp[1]);
             var speed = int.Parse(temp[2]);
             RemoteDebugWindow.Instance.FileUploading(fileName, fileSize, speed);
         }

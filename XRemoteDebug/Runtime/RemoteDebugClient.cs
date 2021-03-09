@@ -178,6 +178,7 @@ namespace XRemoteDebug
             if (m_MsgList.Count == 0) return;
             var bytes = m_MsgList[0];
             m_MsgList.RemoveAt(0);
+            if (bytes == null) return;
             if (m_ReceiveFile)
             {
                 m_LastSpeedByte += bytes.Length;
@@ -288,26 +289,27 @@ namespace XRemoteDebug
             {
                 m_Client.Send(string.Format("{0}#{1}|{2}|{3}$",
                     (int)RemoteDebugMsg.Hierarchy_RootObjects, scene.name, obj.name, obj.activeSelf));
-                SyncSubObjects(obj.transform);
+                SyncSubObjects(obj.transform, obj.activeSelf);
             }
             foreach (var obj in gameObject.scene.GetRootGameObjects())
             {
                 m_Client.Send(string.Format("{0}#{1}|{2}|{3}$",
                     (int)RemoteDebugMsg.Hierarchy_RootObjects, "DontDestroyOnLoad", obj.name, obj.activeSelf));
-                SyncSubObjects(obj.transform);
+                SyncSubObjects(obj.transform,obj.activeSelf);
             }
         }
 
-        private void SyncSubObjects(Transform go)
+        private void SyncSubObjects(Transform go, bool parentActive)
         {
             if (go.childCount == 0) return;
             var path = GetTransformPath(go);
             for (int i = 0; i < go.childCount; i++)
             {
                 var child = go.GetChild(i);
-                m_Client.Send(string.Format("{0}#{1}|{2}|{3}$",
-                    (int)RemoteDebugMsg.Hierarchy_SubObjects, path, child.name, child.gameObject.activeSelf));
-                SyncSubObjects(child);
+                var active = parentActive && child.gameObject.activeSelf;
+                m_Client.Send(string.Format("{0}#{1}|{2}|{3}|{4}$",
+                    (int)RemoteDebugMsg.Hierarchy_SubObjects, path, child.name, child.gameObject.activeSelf, active));
+                SyncSubObjects(child,active);
             }
         }
 

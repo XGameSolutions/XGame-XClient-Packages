@@ -109,8 +109,7 @@ namespace XCommon.Editor
                 foreach (var info in list)
                 {
                     var child = new EditorTableItem(info, rootItem.depth + 1);
-                    if (info.itemDisable) child.icon = info.assetDisableIcon;
-                    else child.icon = info.assetIcon;
+                    child.icon = info.assetIcon;
                     rootItem.AddChild(child);
                     if (info.children != null && info.children.Count > 0)
                     {
@@ -144,17 +143,11 @@ namespace XCommon.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            var oldContentColor = GUI.contentColor;
             var item = args.item as EditorTableItem;
-            if (item.Info.itemDisable)
-            {
-                GUI.contentColor = Color.gray;
-            }
             for (int i = 0; i < args.GetNumVisibleColumns(); i++)
             {
                 CellGUI(args.GetCellRect(i), item, args.GetColumn(i), ref args);
             }
-            GUI.contentColor = oldContentColor;
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
@@ -219,7 +212,10 @@ namespace XCommon.Editor
                     cellRect = new Rect(cellRect.x + iconRect.width + 1, cellRect.y,
                         cellRect.width - iconRect.width, cellRect.height);
                 }
-                DefaultGUI.Label(cellRect, item.Info.GetColumnString(column), args.selected, args.focused);
+                using (new EditorGUI.DisabledGroupScope(item.Info.itemDisabled))
+                {
+                    DefaultGUI.Label(cellRect, item.Info.GetColumnString(column), args.selected, args.focused);
+                }
             }
             else
             {

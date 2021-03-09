@@ -17,12 +17,11 @@ namespace XCommon.Editor
         }
         public virtual string uuid { get; set; }
         public virtual int itemId { get; set; }
-        public virtual bool itemDisable { get; set; }
+        public virtual bool itemDisabled { get; set; }
         public virtual bool itemSelected { get; set; }
         public virtual string displayName { get { return name; } }
         public virtual string assetPath { get; set; }
         public virtual Texture2D assetIcon { get; set; }
-        public virtual Texture2D assetDisableIcon { get; set; }
         public virtual List<IEditorTableItemInfo> children { get; set; }
         public virtual string GetColumnString(int column)
         {

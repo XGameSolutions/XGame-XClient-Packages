@@ -15,8 +15,8 @@ namespace XRemoteDebug
         public bool done;
 
 
-        public int currSize;
-        public int totalSize;
+        public long currSize;
+        public long totalSize;
         public string datetime;
 
 

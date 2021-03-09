@@ -50,11 +50,10 @@ namespace XBuild.AB.ABBrowser
 
         public string displayName { get { return name; } }
         public int itemId { get { return path.GetHashCode(); } }
-        public bool itemDisable { get; set; }
+        public bool itemDisabled { get; set; }
         public bool itemSelected { get; set; }
         public string assetPath { get { return path; } }
         public Texture2D assetIcon { get { return AssetDatabase.GetCachedIcon(path) as Texture2D; } }
-        public Texture2D assetDisableIcon { get; set; }
         public List<IEditorTableItemInfo> children { get; set; }
 
         public static int totalColumn { get { return 8; } }

@@ -26,7 +26,7 @@ namespace XRemoteDebug
             m_LocalPanel.UploadNextFile(flag, successedFileName);
         }
 
-        public void FileUploading(string fileName, int size, int speed)
+        public void FileUploading(string fileName, long size, int speed)
         {
             m_LocalPanel.FileUploading(fileName, size, speed);
         }
@@ -74,7 +74,7 @@ namespace XRemoteDebug
             m_LogPanel.AddLog(filePath, totalSize);
         }
 
-        public void UpdateLogSize(string filePath, int currSize)
+        public void UpdateLogSize(string filePath, long currSize)
         {
             m_LogPanel.UpdateLogSize(filePath, currSize);
         }

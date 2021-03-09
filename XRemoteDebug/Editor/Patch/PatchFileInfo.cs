@@ -9,7 +9,7 @@ namespace XRemoteDebug
 {
     internal class PatchFileInfo : EditorTableBaseItemInfo
     {
-        public int size;
+        public long size;
         public int type;
         public string datetime;
 

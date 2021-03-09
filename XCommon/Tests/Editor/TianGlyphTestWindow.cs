@@ -15,11 +15,10 @@ namespace XCommon.Editor.Tests
 
         public string displayName { get { return test1; } }
         public int itemId { get { return test1.GetHashCode(); } }
-        public bool itemDisable { get; set; }
+        public bool itemDisabled { get; set; }
         public bool itemSelected { get; set; }
         public string assetPath { get; set; }
         public Texture2D assetIcon { get; set; }
-        public Texture2D assetDisableIcon { get; set; }
         public List<IEditorTableItemInfo> children { get; set; }
 
         public static int totalColumn { get { return 3; } }
