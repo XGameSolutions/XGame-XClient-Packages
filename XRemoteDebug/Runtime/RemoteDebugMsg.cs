@@ -3,7 +3,9 @@ namespace XRemoteDebug
 {
     public enum RemoteDebugMsg
     {
-        BaseInfo = 0,
+        ConnectServer,
+        Heartbeat,
+        BaseInfo,
         Error,
         Hierarchy_RootObjects,
         Hierarchy_SubObjects,

@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using UnityEngine;
 
 namespace XCommon.Runtime
@@ -51,6 +50,8 @@ namespace XCommon.Runtime
             m_Socket.Listen(maxConn);
             m_Socket.SendBufferSize = BUF_SIZE;
             m_Socket.ReceiveBufferSize = BUF_SIZE;
+            m_Socket.SendTimeout = 3000;
+            m_Socket.ReceiveTimeout = 3000;
             m_Socket.BeginAccept(onAccept == null ? OnAccept : onAccept, m_Socket);
         }
 
@@ -62,6 +63,8 @@ namespace XCommon.Runtime
             m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             m_Socket.SendBufferSize = BUF_SIZE;
             m_Socket.ReceiveBufferSize = BUF_SIZE;
+            m_Socket.SendTimeout = 3000;
+            m_Socket.ReceiveTimeout = 3000;
             var addr = IPAddress.Parse(m_IP);
             var endPoint = new IPEndPoint(addr, m_Port);
             try
@@ -70,6 +73,7 @@ namespace XCommon.Runtime
             }
             catch (Exception e)
             {
+                SocketLogError("Connect ERROR:" + e.Message);
                 OnConnectCallback?.Invoke(false, e.Message);
             }
         }
@@ -94,7 +98,14 @@ namespace XCommon.Runtime
             catch (Exception e)
             {
                 SocketLogError("Send ERROR:" + e.Message);
+                Close();
             }
+        }
+        public void BeginSend(string text)
+        {
+            SocketLog("BeginSend:" + text);
+            byte[] tex = System.Text.Encoding.UTF8.GetBytes(text);
+            BeginSend(tex);
         }
 
         public bool Send(byte[] buf)
@@ -107,6 +118,7 @@ namespace XCommon.Runtime
             catch (SocketException e)
             {
                 SocketLogError("Send ERROR:" + e.Message);
+                Close();
                 return false;
             }
         }
@@ -156,6 +168,7 @@ namespace XCommon.Runtime
             catch (Exception e)
             {
                 SocketLogError("Send ERROR:" + e.Message);
+                Close();
                 flag = -3;
             }
             return flag;
@@ -217,6 +230,8 @@ namespace XCommon.Runtime
         {
             if (IsUse)
             {
+                if (m_Socket != null && m_Socket.Connected)
+                    m_Socket.Shutdown(SocketShutdown.Both);
                 m_Socket.Close();
                 IsUse = false;
                 SocketLogError("Socket Close");

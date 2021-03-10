@@ -22,8 +22,6 @@ namespace XRemoteDebug
             public static GUIContent connect = new GUIContent("Connect", "Connect to remote debug server");
             public static GUIContent connectAgain = new GUIContent("Connect Again", "Connect to remote debug server again");
             public static GUIContent disconnect = new GUIContent("Disconnect", "Disconnect with debug server");
-            public static GUIContent connecting = new GUIContent("connecting ...", "Connecting to remote debug server");
-            public static GUIContent connectFailed = new GUIContent("Failed", "Connect to remote debug server Failed");
         }
         private XSocket m_Client;
         private ClientState m_State = ClientState.Disconnected;
@@ -39,9 +37,12 @@ namespace XRemoteDebug
         private string m_ReceiveFilePath;
         private FileStream m_ReceiveFileStream;
         private bool m_ShowServerList;
+        private float m_LastHeartbeatTime;
 
         const string k_IP = "127.0.0.1";
         const int k_Port = 6666;
+
+        public bool showEntry = true;
 
         private RemoteDebugClient()
         {
@@ -83,34 +84,20 @@ namespace XRemoteDebug
 
         private void OnGUI()
         {
+            if(!showEntry) return;
             var rect = RemoteDebugConfig.clientRect;
             switch (m_State)
             {
                 case ClientState.Disconnected:
-                    if (GUI.Button(rect, Styles.connect))
-                    {
-                        m_ShowServerList = !m_ShowServerList;
-
-                    }
-                    if (m_ShowServerList)
-                    {
-                        var count = 0;
-                        var port = RemoteDebugConfig.port;
-                        foreach (var info in RemoteDebugConfig.serverList)
-                        {
-                            var btnRect = new Rect(rect.x + rect.width + 10, rect.y + (count++) * 32, rect.width, 30);
-                            if (GUI.Button(btnRect, info.name))
-                            {
-                                ConnectServer(info.name, info.ip, port);
-                            }
-                        }
-                    }
+                    GUI_ServerList(rect);
                     break;
                 case ClientState.Connecting:
-                    GUI.Label(rect, Styles.connecting);
+                    GUI.Label(rect, "连接中...");
                     break;
                 case ClientState.ConnectFailed:
-                    GUI.Label(rect, Styles.connectFailed);
+                    GUI.Label(rect, "连接失败:" + m_ServerName);
+                    rect.y += GUI.skin.font.fontSize + 5;
+                    GUI_ServerList(rect);
                     break;
                 case ClientState.Connected:
                     GUI.Label(rect, "已连接：" + m_ServerName);
@@ -128,12 +115,35 @@ namespace XRemoteDebug
 
         }
 
+        private void GUI_ServerList(Rect rect)
+        {
+            if (GUI.Button(rect, Styles.connect))
+            {
+                m_ShowServerList = !m_ShowServerList;
+
+            }
+            if (m_ShowServerList)
+            {
+                m_ShowServerList = true;
+                var count = 0;
+                var port = RemoteDebugConfig.port;
+                foreach (var info in RemoteDebugConfig.serverList)
+                {
+                    var btnRect = new Rect(rect.x + rect.width + 10, rect.y + (count++) * 32, rect.width, 30);
+                    if (GUI.Button(btnRect, info.name))
+                    {
+                        ConnectServer(info.name, info.ip, port);
+                    }
+                }
+            }
+        }
+
         private void ConnectServer(string name, string ip, int port)
         {
             m_ServerName = name;
             m_State = ClientState.Connecting;
             m_Client.Connect(k_IP, k_Port);
-            SendInfo();
+            //SendInfo();
         }
 
         private void OnConnect(bool success, string error)
@@ -141,14 +151,14 @@ namespace XRemoteDebug
             Debug.Log("DebugClient-OnConnect:" + success + "," + error);
             if (success)
             {
-                m_State = ClientState.Connected;
                 m_Client.BeginReceive();
-                m_Client.Send(GetInfoMsg());
+                m_State = ClientState.Connected;
+                var msg = string.Format("{0}#0", (int)RemoteDebugMsg.ConnectServer);
+                m_MsgList.Add(System.Text.Encoding.UTF8.GetBytes(msg));
             }
             else
             {
                 m_State = ClientState.ConnectFailed;
-                Styles.connectFailed.tooltip = "Connect failed:" + error;
                 Debug.LogError("OnConnect ERROR:" + error);
             }
         }
@@ -156,8 +166,7 @@ namespace XRemoteDebug
         private void OnClose(XSocket socket)
         {
             m_State = ClientState.ConnectFailed;
-            Styles.connectFailed.tooltip = "Connect failed: close";
-            Debug.LogError("OnClose");
+            m_ShowServerList = false;
         }
 
         private void OnReceive(XSocket socket, byte[] buffer, int len)
@@ -171,6 +180,17 @@ namespace XRemoteDebug
         {
             HandleMsg();
             HandleReceiveFile();
+            Heartbeat();
+        }
+
+        private void Heartbeat()
+        {
+            if (m_State != ClientState.Connected) return;
+            if (Time.time - m_LastHeartbeatTime > 1)
+            {
+                m_LastHeartbeatTime = Time.time;
+                m_Client.Send(string.Format("{0}#{1}$", (int)RemoteDebugMsg.Heartbeat, 0));
+            }
         }
 
         private void HandleMsg()
@@ -203,6 +223,9 @@ namespace XRemoteDebug
             var msgContent = temp[1];
             switch (msgType)
             {
+                case RemoteDebugMsg.ConnectServer:
+                    SendInfo();
+                    break;
                 case RemoteDebugMsg.Hierarchy_RootObjects:
                     HandleMsg_GetRootObjects(msgContent);
                     break;
@@ -295,7 +318,7 @@ namespace XRemoteDebug
             {
                 m_Client.Send(string.Format("{0}#{1}|{2}|{3}$",
                     (int)RemoteDebugMsg.Hierarchy_RootObjects, "DontDestroyOnLoad", obj.name, obj.activeSelf));
-                SyncSubObjects(obj.transform,obj.activeSelf);
+                SyncSubObjects(obj.transform, obj.activeSelf);
             }
         }
 
@@ -309,7 +332,7 @@ namespace XRemoteDebug
                 var active = parentActive && child.gameObject.activeSelf;
                 m_Client.Send(string.Format("{0}#{1}|{2}|{3}|{4}$",
                     (int)RemoteDebugMsg.Hierarchy_SubObjects, path, child.name, child.gameObject.activeSelf, active));
-                SyncSubObjects(child,active);
+                SyncSubObjects(child, active);
             }
         }
 

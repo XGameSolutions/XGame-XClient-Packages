@@ -35,6 +35,10 @@ namespace XRemoteDebug
 
         public void Close()
         {
+            foreach (var client in m_ClientDic.Values)
+            {
+                client.Close();
+            }
             m_Server.Close();
         }
 
@@ -204,6 +208,8 @@ namespace XRemoteDebug
             var msgContent = temp[1];
             switch (msgType)
             {
+                case RemoteDebugMsg.Heartbeat:
+                    break;
                 case RemoteDebugMsg.Error:
                     RemoteDebugWindow.Instance.ShowNotification(new GUIContent(msgContent));
                     Debug.LogError("ERROR:" + msgContent);
