@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using XCommon.Editor;
+using XCommon.Runtime;
 
 namespace XRemoteDebug
 {
@@ -42,7 +43,7 @@ namespace XRemoteDebug
         const float k_MenubarHeight = 0;//= 20f;
         const float k_MenubarXGap = 0;//= 1f;
         const float k_MenubarYGap = 0;//= 4f;
-        const string k_IP = "127.0.0.1";
+        const string k_IP = "172.20.10.5";
         const float k_AssetsToolbarHeight = 27;
 
         internal RemoteDebugServer server;
@@ -89,6 +90,7 @@ namespace XRemoteDebug
             }
             SwitchPanel();
 
+            Debug.LogError("OnEnable:"+XNetUtil.GetLocalIP());
             server?.Close();
             server = new RemoteDebugServer(k_IP, RemoteDebugConfig.port);
             server.Start();

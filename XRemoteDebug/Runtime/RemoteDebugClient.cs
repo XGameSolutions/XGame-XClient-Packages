@@ -38,6 +38,7 @@ namespace XRemoteDebug
         private FileStream m_ReceiveFileStream;
         private bool m_ShowServerList;
         private float m_LastHeartbeatTime;
+        private string m_LocalIP = "";
 
         const string k_IP = "127.0.0.1";
         const int k_Port = 6666;
@@ -70,6 +71,7 @@ namespace XRemoteDebug
             m_Client.OnConnectCallback = OnConnect;
             m_Client.OnReceiveCallback = OnReceive;
             m_Client.OnCloseCallback = OnClose;
+            m_LocalIP = XNetUtil.GetLocalIP();
         }
 
         public void Connect(string ip, int port)
@@ -84,8 +86,10 @@ namespace XRemoteDebug
 
         private void OnGUI()
         {
-            if(!showEntry) return;
+            if (!showEntry) return;
             var rect = RemoteDebugConfig.clientRect;
+            GUI.Label(rect, "本机：" + m_LocalIP);
+            rect.y += GUI.skin.font.fontSize + 10;
             switch (m_State)
             {
                 case ClientState.Disconnected:
@@ -129,7 +133,8 @@ namespace XRemoteDebug
                 var port = RemoteDebugConfig.port;
                 foreach (var info in RemoteDebugConfig.serverList)
                 {
-                    var btnRect = new Rect(rect.x + rect.width + 10, rect.y + (count++) * 32, rect.width, 30);
+                    var btnRect = new Rect(rect.x + rect.width + 10, rect.y + (count++) * (RemoteDebugConfig.clientHeight + 5),
+                        rect.width, RemoteDebugConfig.clientHeight);
                     if (GUI.Button(btnRect, info.name))
                     {
                         ConnectServer(info.name, info.ip, port);

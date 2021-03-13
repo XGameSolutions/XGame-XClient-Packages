@@ -70,6 +70,7 @@ namespace XRemoteDebug
 
 
         public static Rect clientRect { get { return new Rect(Instance.m_ClientX, Instance.m_ClientY, Instance.m_ClientWidth, Instance.m_ClientHeight); } }
+        public static float clientHeight { get { return Instance.m_ClientHeight; } }
         public static int port { get { return Instance.m_Port; } }
         public static ServerInfo[] serverList { get { return Instance.m_ServerInfos; } }
         public static int socketUploadFileBufferSize { get { return Instance.m_SocketUploadFileBufferSize; } }

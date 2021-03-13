@@ -46,6 +46,7 @@ namespace XCommon.Runtime
             m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var addr = IPAddress.Parse(m_IP);
             var endPoint = new IPEndPoint(addr, m_Port);
+            SocketLog("listen:" + m_IP + "," + m_Port+","+endPoint.Address.AddressFamily.ToString());
             m_Socket.Bind(endPoint);
             m_Socket.Listen(maxConn);
             m_Socket.SendBufferSize = BUF_SIZE;
@@ -69,7 +70,7 @@ namespace XCommon.Runtime
             var endPoint = new IPEndPoint(addr, m_Port);
             try
             {
-                m_Socket.BeginConnect(endPoint, OnConnect, null);
+                m_Socket.BeginConnect(endPoint, OnConnect, m_Socket);
             }
             catch (Exception e)
             {
@@ -117,7 +118,7 @@ namespace XCommon.Runtime
             }
             catch (SocketException e)
             {
-                SocketLogError("Send ERROR:" + e.Message);
+                SocketLogError("Send ERROR:" + e.ErrorCode + "," + e.Message);
                 Close();
                 return false;
             }
@@ -241,9 +242,19 @@ namespace XCommon.Runtime
 
         protected virtual void OnConnect(IAsyncResult result)
         {
-            SocketLog("OnConnect SUCCESS!");
-            ConnectTime = DateTime.Now;
-            OnConnectCallback?.Invoke(true, null);
+            var socket = (Socket)result.AsyncState;
+            try
+            {
+                socket.EndConnect(result);
+                ConnectTime = DateTime.Now;
+                SocketLog("OnConnect SUCCESS!");
+                OnConnectCallback?.Invoke(true, null);
+            }
+            catch (Exception e)
+            {
+                SocketLogError("OnConnect Failed:" + e.Message);
+                OnConnectCallback?.Invoke(false, e.Message);
+            }
         }
 
         protected virtual void OnSend(IAsyncResult result)
@@ -296,20 +307,22 @@ namespace XCommon.Runtime
             }
         }
 
-        private void SocketLog(string log)
+        internal void SocketLog(string log)
         {
-            //Debug.LogFormat("[{0}] {1}", Name, log);
-        }
-        private void SocketLog(object log)
-        {
-            //Debug.LogFormat("[{0}] {1}", Name, log.ToString());
+            Debug.LogFormat("[{0}] {1}", Name, log);
         }
 
-        private void SocketLogError(string log)
+        internal void SocketLog(object log)
+        {
+            Debug.LogFormat("[{0}] {1}", Name, log.ToString());
+        }
+
+        internal void SocketLogError(string log)
         {
             Debug.LogErrorFormat("[{0}] {1}", Name, log);
         }
-        private void SocketLogError(object log)
+
+        internal void SocketLogError(object log)
         {
             Debug.LogErrorFormat("[{0}] {1}", Name, log.ToString());
         }

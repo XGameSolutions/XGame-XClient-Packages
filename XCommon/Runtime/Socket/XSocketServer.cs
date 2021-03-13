@@ -40,7 +40,7 @@ namespace XCommon.Runtime
             m_Server = new XSocket();
             m_Server.Name = "Server";
             m_Server.Listen(m_IP, m_Port, m_MaxConnection, OnAccept);
-            Debug.Log("XSocketServer Start");
+            m_Server.SocketLog("XSocketServer Start");
         }
 
         public void Close()
@@ -90,13 +90,14 @@ namespace XCommon.Runtime
             if (m_Server == null) return;
             try
             {
+                m_Server.SocketLog("OnAccept:new connect");
                 var server = result.AsyncState as Socket;
                 var socket = server.EndAccept(result);
                 var index = NewIndex();
                 if (index < 0)
                 {
                     socket.Close();
-                    Debug.LogError("XSocketServer OnAccept ERROR: connect max.");
+                    m_Server.SocketLogError("XSocketServer OnAccept ERROR: connect max.");
                 }
                 else
                 {
@@ -109,20 +110,20 @@ namespace XCommon.Runtime
             }
             catch (Exception e)
             {
-                Debug.LogError("XSocketServer OnAccept ERROR:" + e.Message);
+                m_Server.SocketLogError("XSocketServer OnAccept ERROR:" + e.Message);
             }
         }
 
         private void OnClientReceive(XSocket socket, byte[] buffer, int len)
         {
             var content = System.Text.Encoding.UTF8.GetString(buffer, 0, len);
-            //Debug.Log("[server] receive:" + socket.Index + "," + content);
+            m_Server.SocketLog("OnClientReceive:" + socket.Index + "," + content);
             OnClientReceiveCallback?.Invoke(socket.Index, content);
         }
 
         private void OnClientClose(XSocket socket)
         {
-            //Debug.Log("[server] close:" + socket.Index);
+            m_Server.SocketLog("OnClientClose:" + socket.Index);
             OnClientCloseCallback?.Invoke(socket.Index);
         }
     }
