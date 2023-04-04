@@ -1,9 +1,4 @@
-/******************************************/
-/*                                        */
-/*     Copyright (c) 2020 monitor1394     */
-/*     https://github.com/monitor1394     */
-/*                                        */
-/******************************************/
+
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;

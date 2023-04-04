@@ -19,7 +19,7 @@ namespace XRemoteDebug
         }
 
         private PatchPanel m_Parent;
-        private EditorTable m_FileTree;
+        private XEditorTable m_FileTree;
         private string m_RemotePath;
         private SearchField m_SearchField;
         private string m_SearchText;
@@ -152,7 +152,7 @@ namespace XRemoteDebug
             if (m_FileTree == null)
             {
                 var column = PatchFileInfo.totalColumn;
-                m_FileTree = EditorTable.CreateTable(column);
+                m_FileTree = XEditorTable.CreateTable(column);
                 for (int i = 0; i < column; i++)
                 {
                     m_FileTree.SetColumnHeader(i, PatchFileInfo.GetColumnHeader(i));
@@ -165,7 +165,7 @@ namespace XRemoteDebug
             m_FileTree.OnGUI(rect);
         }
 
-        private void OnSelectedFileList(List<IEditorTableItemInfo> infoList)
+        private void OnSelectedFileList(List<XIEditorTableItemInfo> infoList)
         {
             
             m_SelectedFileInfos.Clear();
@@ -182,7 +182,7 @@ namespace XRemoteDebug
             }
         }
 
-        private void OnDoubleClickedItem(IEditorTableItemInfo item)
+        private void OnDoubleClickedItem(XIEditorTableItemInfo item)
         {
             var info = item as PatchFileInfo;
             if (info != null)

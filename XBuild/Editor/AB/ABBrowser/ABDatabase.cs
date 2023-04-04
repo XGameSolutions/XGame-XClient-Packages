@@ -108,7 +108,7 @@ namespace XBuild.AB.ABBrowser
         {
             var strPlatform = target.ToString();
             s_TargetPlatform = target;
-            s_ABDirPath = string.Format("{0}/{1}/", ABConfig.GetABDirPath(), strPlatform);
+            s_ABDirPath = string.Format("{0}/{1}/{2}/", ABConfig.GetABDirPath(), strPlatform, strPlatform);
             if (!Directory.Exists(s_ABDirPath))
             {
                 var error = "can't find dir:" + s_ABDirPath;
@@ -374,9 +374,10 @@ namespace XBuild.AB.ABBrowser
 
         private static void ABInfoDepCountAndSize(ABInfo info, string abName)
         {
-            var list = s_Manifest.GetAllDependencies(abName);
-            if (list == null || list.Length == 0) return;
-            foreach (var ab in list)
+            var allDeps = s_Manifest.GetAllDependencies(abName);
+            if (allDeps == null || allDeps.Length == 0) return;
+            var direDeps = s_Manifest.GetDirectDependencies(abName);
+            foreach (var ab in allDeps)
             {
                 if (info.AddDepAB(ab))
                 {
@@ -385,7 +386,8 @@ namespace XBuild.AB.ABBrowser
                         info.depSize += GetABFileSize(ab);
                     }
                     var depInfo = GetOrInitABInfo(ab);
-                    depInfo.AddRefAB(info.name);
+                    if(direDeps.Contains(ab))
+                        depInfo.AddRefAB(info.name);
                     ABInfoDepCountAndSize(info, ab);
                 }
             }

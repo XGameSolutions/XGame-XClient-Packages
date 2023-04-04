@@ -7,13 +7,13 @@ using XCommon.Runtime;
 
 namespace XRemoteDebug
 {
-    internal class HierarchyItemInfo : XSocket, IEditorTableItemInfo
+    internal class HierarchyItemInfo : XSocket, XIEditorTableItemInfo
     {
         public HierarchyItemInfo(string name, string path)
         {
             m_Name = name;
             m_Path = path;
-            children = new List<IEditorTableItemInfo>();
+            children = new List<XIEditorTableItemInfo>();
         }
         private string m_Name;
         private string m_Path;
@@ -25,14 +25,14 @@ namespace XRemoteDebug
         }
         public string path { get { return m_Path; } }
 
-        #region IEditorTableItemInfo
+        #region XIEditorTableItemInfo
         public string displayName { get { return name; } }
         public int itemId { get { return m_Path.GetHashCode(); } }
         public bool itemDisabled { get; set; }
         public bool itemSelected { get; set; }
         public string assetPath { get; set; }
         public Texture2D assetIcon { get; set; }
-        public List<IEditorTableItemInfo> children { get; set; }
+        public List<XIEditorTableItemInfo> children { get; set; }
 
         public static int totalColumn { get { return 1; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)

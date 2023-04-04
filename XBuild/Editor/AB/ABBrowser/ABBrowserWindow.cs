@@ -39,9 +39,9 @@ namespace XBuild.AB.ABBrowser
         [SerializeField] private int m_SelectedDepIndex;
         [SerializeField] internal ABDatabase.ABSource abSource = ABDatabase.ABSource.Dir;
 
-        private EditorTable m_ABTree;
-        private EditorTable m_ABDepTree;
-        private EditorTable m_AssetTree;
+        private XEditorTable m_ABTree;
+        private XEditorTable m_ABDepTree;
+        private XEditorTable m_AssetTree;
         private MessageListPanel m_MessagePanel;
         const float k_MenubarPadding = 49.5f;
         const float k_DepToolbarHeight = 20f;
@@ -215,6 +215,7 @@ namespace XBuild.AB.ABBrowser
                 "Material\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Material),
                 "Texture\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Texture),
                 "Prefab\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Prefab),
+                "Fbx\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Fbx),
                 "Shader\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Shader),
                 "Asset\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Asset),
                 "Other\n"+ ABDatabase.GetAssetTypeSizeStr(AssetsType.Other),
@@ -256,7 +257,7 @@ namespace XBuild.AB.ABBrowser
         {
             if (m_ABTree != null) return;
             var column = ABInfo.totalColumn;
-            m_ABTree = EditorTable.CreateTable(column);
+            m_ABTree = XEditorTable.CreateTable(column);
             for (int i = 0; i < column; i++)
             {
                 m_ABTree.SetColumnHeader(i, ABInfo.GetColumnHeader(i));
@@ -269,7 +270,7 @@ namespace XBuild.AB.ABBrowser
         {
             if (m_ABDepTree != null) return;
             var column = ABInfo.totalColumn;
-            m_ABDepTree = EditorTable.CreateTable(column);
+            m_ABDepTree = XEditorTable.CreateTable(column);
             for (int i = 0; i < column; i++)
             {
                 m_ABDepTree.SetColumnHeader(i, ABInfo.GetColumnHeader(i));
@@ -282,7 +283,7 @@ namespace XBuild.AB.ABBrowser
         {
             if (m_AssetTree != null) return;
             var column = ABAssetsInfo.totalColumn;
-            m_AssetTree = EditorTable.CreateTable(column, true);
+            m_AssetTree = XEditorTable.CreateTable(column, true);
             for (int i = 0; i < column; i++)
             {
                 m_AssetTree.SetColumnHeader(i, ABAssetsInfo.GetColumnHeader(i));
@@ -292,7 +293,7 @@ namespace XBuild.AB.ABBrowser
         }
 
 
-        private void OnSelectedABList(List<IEditorTableItemInfo> infoList)
+        private void OnSelectedABList(List<XIEditorTableItemInfo> infoList)
         {
             m_SelectedABInfos = infoList.ConvertAll<ABInfo>(info => info as ABInfo);
             ABDatabase.RefreshAssets(m_SelectedABInfos);
@@ -312,14 +313,14 @@ namespace XBuild.AB.ABBrowser
             }
         }
 
-        private void OnSelectedABDepList(List<IEditorTableItemInfo> infoList)
+        private void OnSelectedABDepList(List<XIEditorTableItemInfo> infoList)
         {
             var list = infoList.ConvertAll<ABInfo>(info => info as ABInfo);
             ABDatabase.RefreshAssets(list);
             m_AssetTree.UpdateInfoList(null);
         }
 
-        private void OnSelectedAssetsList(List<IEditorTableItemInfo> assetsList)
+        private void OnSelectedAssetsList(List<XIEditorTableItemInfo> assetsList)
         {
             var list = assetsList.ConvertAll<ABAssetsInfo>(info => info as ABAssetsInfo);
             m_MessagePanel.SetSelectedAssets(list);

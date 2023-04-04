@@ -20,7 +20,7 @@ namespace XBuild.AB.ABBrowser
         Dep
     }
 
-    internal class ABInfo : EditorTableBaseItemInfo
+    internal class ABInfo : XEditorTableBaseItemInfo
     {
         public ABType type;
         public long size;
@@ -70,7 +70,7 @@ namespace XBuild.AB.ABBrowser
 
         public override string displayName { get { return name; } }
         public override int itemId { get { return name.GetHashCode(); } }
-        public override List<IEditorTableItemInfo> children { get { return null; } }
+        public override List<XIEditorTableItemInfo> children { get { return null; } }
 
         public static int totalColumn { get { return 5; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)

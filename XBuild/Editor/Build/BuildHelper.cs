@@ -1,9 +1,4 @@
-﻿/******************************************/
-/*                                        */
-/*     Copyright (c) 2020 monitor1394     */
-/*     https://github.com/monitor1394     */
-/*                                        */
-/******************************************/
+﻿
 
 using UnityEngine;
 using UnityEditor;
@@ -109,7 +104,7 @@ namespace XBuild
 
         public static string GetABDir(BuildTarget target)
         {
-            return BuildConfig.abDir + target;
+            return string.Format("{0}{1}/{2}", BuildConfig.abDir, target, target);
         }
 
         public static string GetABDirPath(BuildTarget target)

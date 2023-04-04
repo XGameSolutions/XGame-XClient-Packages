@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace XCommon.Editor.Tests
 {
-    class TestInfo : IEditorTableItemInfo
+    class TestInfo : XIEditorTableItemInfo
     {
         public string test1;
         public int test2;
@@ -19,7 +19,7 @@ namespace XCommon.Editor.Tests
         public bool itemSelected { get; set; }
         public string assetPath { get; set; }
         public Texture2D assetIcon { get; set; }
-        public List<IEditorTableItemInfo> children { get; set; }
+        public List<XIEditorTableItemInfo> children { get; set; }
 
         public static int totalColumn { get { return 3; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)
@@ -69,7 +69,7 @@ namespace XCommon.Editor.Tests
     {
         TianGlyphPanel m_Panel;
 
-        EditorTable m_RTTable;
+        XEditorTable m_RTTable;
         TestPanel m_LTPanel;
 
 
@@ -115,7 +115,7 @@ namespace XCommon.Editor.Tests
             if (m_RTTable == null)
             {
                 var column = TestInfo.totalColumn;
-                m_RTTable = EditorTable.CreateTable(column);
+                m_RTTable = XEditorTable.CreateTable(column);
                 for (int i = 0; i < column; i++)
                 {
                     m_RTTable.SetColumnHeader(0, TestInfo.GetColumnHeader(i));
@@ -133,7 +133,7 @@ namespace XCommon.Editor.Tests
             return new Rect(0, padding, position.width, position.height - padding);
         }
 
-        private void SelectedInfo(List<IEditorTableItemInfo> list)
+        private void SelectedInfo(List<XIEditorTableItemInfo> list)
         {
             //Debug.LogError("selected:" + list.Count);
         }

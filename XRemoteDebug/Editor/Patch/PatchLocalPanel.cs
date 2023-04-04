@@ -29,7 +29,7 @@ namespace XRemoteDebug
         [SerializeField] private string m_LocalPath = Application.dataPath;
         [SerializeField] private string[] m_FilterFiles = new string[] { ".meta", ".manifest", ".DS_Store", ".git" };
         private PatchPanel m_Parent;
-        private EditorTable m_FileTree;
+        private XEditorTable m_FileTree;
         private SearchField m_SearchField;
         private string m_SearchText;
         private List<PatchFileInfo> m_FileList = new List<PatchFileInfo>();
@@ -253,7 +253,7 @@ namespace XRemoteDebug
             if (m_FileTree == null)
             {
                 var column = PatchFileInfo.totalColumn;
-                m_FileTree = EditorTable.CreateTable(column);
+                m_FileTree = XEditorTable.CreateTable(column);
                 for (int i = 0; i < column; i++)
                 {
                     m_FileTree.SetColumnHeader(i, PatchFileInfo.GetColumnHeader(i));
@@ -296,7 +296,7 @@ namespace XRemoteDebug
             }
         }
 
-        private void OnSelectedFileList(List<IEditorTableItemInfo> infoList)
+        private void OnSelectedFileList(List<XIEditorTableItemInfo> infoList)
         {
             m_WaitingUploadFileInfos.Clear();
             if (infoList != null)
@@ -313,7 +313,7 @@ namespace XRemoteDebug
             UpdateSelectedFileCountAndSize();
         }
 
-        private void OnDoubleClickedItem(IEditorTableItemInfo item)
+        private void OnDoubleClickedItem(XIEditorTableItemInfo item)
         {
             if (!m_IsUploaded)
             {

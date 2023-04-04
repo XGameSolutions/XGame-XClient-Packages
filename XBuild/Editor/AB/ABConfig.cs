@@ -1,9 +1,4 @@
-/******************************************/
-/*                                        */
-/*     Copyright (c) 2020 monitor1394     */
-/*     https://github.com/monitor1394     */
-/*                                        */
-/******************************************/
+
 
 using System;
 using System.IO;
@@ -62,7 +57,8 @@ namespace XBuild.AB
         public string[] common_ab_list = new string[] { "shader" };
 
         public string[] file_suffix_material = new string[] { ".mat" };
-        public string[] file_suffix_prefab = new string[] { ".prefab", ".fbx", ".obj" };
+        public string[] file_suffix_prefab = new string[] { ".prefab" };
+        public string[] file_suffix_fbx = new string[] { ".fbx", ".st", ".obj" };
         public string[] file_suffix_script = new string[] { ".cs" };
         public string[] file_suffix_shader = new string[] { ".shader" };
         public string[] file_suffix_asset = new string[] { ".asset" };
@@ -116,6 +112,7 @@ namespace XBuild.AB
             else if (IsMaterial(extention)) return AssetsType.Material;
             else if (IsTexture(extention)) return AssetsType.Texture;
             else if (IsPrefab(extention)) return AssetsType.Prefab;
+            else if (IsFbx(extention)) return AssetsType.Fbx;
             else if (IsAsset(extention)) return AssetsType.Asset;
             else return AssetsType.Other;
         }
@@ -156,6 +153,16 @@ namespace XBuild.AB
             }
             return false;
         }
+
+        public static bool IsFbx(string extention)
+        {
+            foreach (var suffix in Instance.file_suffix_fbx)
+            {
+                if (extention.Equals(suffix, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
+        }
+
         public static bool IsScript(string extention)
         {
             foreach (var suffix in Instance.file_suffix_script)

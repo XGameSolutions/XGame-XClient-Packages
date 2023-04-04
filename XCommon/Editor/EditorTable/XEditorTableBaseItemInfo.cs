@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace XCommon.Editor
 {
-    public class EditorTableBaseItemInfo : IEditorTableItemInfo
+    public class XEditorTableBaseItemInfo : XIEditorTableItemInfo
     {
         protected string m_Name;
 
@@ -22,7 +22,7 @@ namespace XCommon.Editor
         public virtual string displayName { get { return name; } }
         public virtual string assetPath { get; set; }
         public virtual Texture2D assetIcon { get; set; }
-        public virtual List<IEditorTableItemInfo> children { get; set; }
+        public virtual List<XIEditorTableItemInfo> children { get; set; }
         public virtual string GetColumnString(int column)
         {
             throw new Exception("GetColumnString() need to override");

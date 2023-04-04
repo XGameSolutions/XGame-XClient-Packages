@@ -1,10 +1,3 @@
-/******************************************/
-/*                                        */
-/*     Copyright (c) 2020 monitor1394     */
-/*     https://github.com/monitor1394     */
-/*                                        */
-/******************************************/
-
 using System;
 using System.Globalization;
 using System.IO;
@@ -39,7 +32,12 @@ namespace XBuild
         public void Init(string fileName)
         {
             if (m_IsInited) return;
-            var path = string.Format("{0}/{1}.txt", Application.dataPath, fileName);
+            var buildLog = Application.dataPath + "/../BuildLog";
+            if (!Directory.Exists(buildLog))
+            {
+                Directory.CreateDirectory(buildLog);
+            }
+            var path = string.Format("%s/%s.txt", buildLog, fileName);
             try
             {
                 if (File.Exists(path)) File.Delete(path);

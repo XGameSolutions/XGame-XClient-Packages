@@ -7,7 +7,7 @@ using XCommon.Runtime;
 
 namespace XRemoteDebug
 {
-    internal class RemoteDebugClientInfo : XSocket, IEditorTableItemInfo
+    internal class RemoteDebugClientInfo : XSocket, XIEditorTableItemInfo
     {
         private string m_Name;
 
@@ -29,14 +29,14 @@ namespace XRemoteDebug
         public string remoteCurrentFolder;
         #endregion
 
-        #region IEditorTableItemInfo
+        #region XIEditorTableItemInfo
         public string displayName { get { return name; } }
         public int itemId { get { return name.GetHashCode(); } }
         public bool itemDisabled { get; set; }
         public bool itemSelected { get; set; }
         public string assetPath { get; set; }
         public Texture2D assetIcon { get; set; }
-        public List<IEditorTableItemInfo> children { get; set; }
+        public List<XIEditorTableItemInfo> children { get; set; }
 
         public static int totalColumn { get { return 1; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)

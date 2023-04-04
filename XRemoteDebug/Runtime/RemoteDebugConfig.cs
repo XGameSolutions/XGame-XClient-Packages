@@ -1,9 +1,4 @@
-/******************************************/
-/*                                        */
-/*     Copyright (c) 2020 monitor1394     */
-/*     https://github.com/monitor1394     */
-/*                                        */
-/******************************************/
+
 
 using System;
 using System.IO;
@@ -53,14 +48,14 @@ namespace XRemoteDebug
         }
 
 
-        [SerializeField] private float m_ClientX = 10;
-        [SerializeField] private float m_ClientY = 10;
-        [SerializeField] private float m_ClientWidth = 100;
+        [SerializeField] private float m_ClientX = 100;
+        [SerializeField] private float m_ClientY = 100;
+        [SerializeField] private float m_ClientWidth = 150;
         [SerializeField] private float m_ClientHeight = 50;
         [SerializeField] private int m_SocketUploadFileBufferSize = 1024 * 1024;
 
 
-        [SerializeField] private int m_Port = 6666;
+        [SerializeField] private int m_Port = 16666;
         [SerializeField]
         private ServerInfo[] m_ServerInfos = new ServerInfo[] {
             new ServerInfo("本地服","127.0.0.1"),

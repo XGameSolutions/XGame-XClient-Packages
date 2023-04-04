@@ -7,7 +7,7 @@ using XCommon.Editor;
 
 namespace XRemoteDebug
 {
-    internal class PatchFileInfo : EditorTableBaseItemInfo
+    internal class PatchFileInfo : XEditorTableBaseItemInfo
     {
         public long size;
         public int type;
@@ -23,7 +23,7 @@ namespace XRemoteDebug
             return name;
         }
 
-        #region IEditorTableItemInfo
+        #region XIEditorTableItemInfo
         public override int itemId { get { return name.GetHashCode(); } }
 
         public static int totalColumn { get { return 3; } }

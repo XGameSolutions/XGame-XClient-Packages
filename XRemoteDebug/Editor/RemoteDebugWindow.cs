@@ -35,7 +35,7 @@ namespace XRemoteDebug
         [SerializeField] private DebugTab m_SelectedTab;
         private GUIContent m_RefreshTexture;
         private GUIContent m_SaveTexture;
-        private EditorTable m_ClientTree;
+        private XEditorTable m_ClientTree;
 
         private IRemoteDebugPanel[] m_TabPanels;
 
@@ -43,7 +43,6 @@ namespace XRemoteDebug
         const float k_MenubarHeight = 0;//= 20f;
         const float k_MenubarXGap = 0;//= 1f;
         const float k_MenubarYGap = 0;//= 4f;
-        const string k_IP = "172.20.10.5";
         const float k_AssetsToolbarHeight = 27;
 
         internal RemoteDebugServer server;
@@ -90,9 +89,9 @@ namespace XRemoteDebug
             }
             SwitchPanel();
 
-            Debug.LogError("OnEnable:"+XNetUtil.GetLocalIP());
+            var ip = XNetUtil.GetLocalIPv4();
             server?.Close();
-            server = new RemoteDebugServer(k_IP, RemoteDebugConfig.port);
+            server = new RemoteDebugServer(ip, RemoteDebugConfig.port);
             server.Start();
         }
 
@@ -188,7 +187,7 @@ namespace XRemoteDebug
         {
             if (m_ClientTree != null) return;
             var column = RemoteDebugClientInfo.totalColumn;
-            m_ClientTree = EditorTable.CreateTable(column);
+            m_ClientTree = XEditorTable.CreateTable(column);
             for (int i = 0; i < column; i++)
             {
                 m_ClientTree.SetColumnHeader(i, RemoteDebugClientInfo.GetColumnHeader(i));
@@ -197,7 +196,7 @@ namespace XRemoteDebug
             m_Panel.SetLeftTopPanel(m_ClientTree, false);
         }
 
-        private void OnDoubleClickedItem(IEditorTableItemInfo info)
+        private void OnDoubleClickedItem(XIEditorTableItemInfo info)
         {
             SelectedClient(info as RemoteDebugClientInfo);
         }

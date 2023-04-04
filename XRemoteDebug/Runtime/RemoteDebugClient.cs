@@ -71,7 +71,7 @@ namespace XRemoteDebug
             m_Client.OnConnectCallback = OnConnect;
             m_Client.OnReceiveCallback = OnReceive;
             m_Client.OnCloseCallback = OnClose;
-            m_LocalIP = XNetUtil.GetLocalIP();
+            m_LocalIP = XNetUtil.GetLocalIPv4();
         }
 
         public void Connect(string ip, int port)

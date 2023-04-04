@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace XCommon.Editor
 {
-    public interface IEditorTableItemInfo
+    public interface XIEditorTableItemInfo
     {
         int itemId { get; }
         bool itemDisabled { get; }
@@ -13,7 +13,7 @@ namespace XCommon.Editor
         string displayName { get; }
         string assetPath { get; }
         Texture2D assetIcon { get; }
-        List<IEditorTableItemInfo> children { get; }
+        List<XIEditorTableItemInfo> children { get; }
         string GetColumnString(int column);
         object GetColumnOrder(int column);
     }

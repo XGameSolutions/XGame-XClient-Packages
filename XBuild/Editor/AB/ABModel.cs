@@ -1,9 +1,4 @@
-/******************************************/
-/*                                        */
-/*     Copyright (c) 2020 monitor1394     */
-/*     https://github.com/monitor1394     */
-/*                                        */
-/******************************************/
+
 
 using System.Collections.Generic;
 
@@ -23,6 +18,7 @@ namespace XBuild.AB
         Material,
         Texture,
         Prefab,
+        Fbx,
         Shader,
         Asset,
         Other

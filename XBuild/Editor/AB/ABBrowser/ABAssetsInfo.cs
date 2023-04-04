@@ -11,7 +11,7 @@ using XCommon.Editor;
 
 namespace XBuild.AB.ABBrowser
 {
-    internal class ABAssetsInfo : AssetsInfo, IEditorTableItemInfo
+    internal class ABAssetsInfo : AssetsInfo, XIEditorTableItemInfo
     {
         internal static Color k_LightGrey = Color.grey * 1.5f;
         private MessageSystem.MessageState m_AssetMessages = new MessageSystem.MessageState();
@@ -54,7 +54,7 @@ namespace XBuild.AB.ABBrowser
         public bool itemSelected { get; set; }
         public string assetPath { get { return path; } }
         public Texture2D assetIcon { get { return AssetDatabase.GetCachedIcon(path) as Texture2D; } }
-        public List<IEditorTableItemInfo> children { get; set; }
+        public List<XIEditorTableItemInfo> children { get; set; }
 
         public static int totalColumn { get { return 8; } }
         public static MultiColumnHeaderState.Column GetColumnHeader(int column)

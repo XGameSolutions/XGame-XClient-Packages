@@ -10,48 +10,48 @@ namespace XCommon.Editor
     /// <summary>
     /// 表格
     /// </summary>
-    public class EditorTable : TreeView, ITianGlyphPanel
+    public class XEditorTable : TreeView, ITianGlyphPanel
     {
         class Styles
         {
             public static readonly Texture selected = EditorGUIUtility.IconContent("d_FilterSelectedOnly").image;
         }
-        public static EditorTable CreateTable(int column, bool enabelSelectedObject = false)
+        public static XEditorTable CreateTable(int column, bool enabelSelectedObject = false)
         {
             var state = TianGlyphUtil.GetDefaultState();
             var mchs = TianGlyphUtil.GetDefaultMCHS(column);
-            return new EditorTable(state, mchs, enabelSelectedObject);
+            return new XEditorTable(state, mchs, enabelSelectedObject);
         }
 
-        public static EditorTable CreateTable(int column, TreeViewState state, bool enabelSelectedObject = false)
+        public static XEditorTable CreateTable(int column, TreeViewState state, bool enabelSelectedObject = false)
         {
             var mchs = TianGlyphUtil.GetDefaultMCHS(column);
-            return new EditorTable(state, mchs, enabelSelectedObject);
+            return new XEditorTable(state, mchs, enabelSelectedObject);
         }
 
-        public static EditorTable CreateTable(TreeViewState state, MultiColumnHeaderState mchs, bool enabelSelectedObject = false)
+        public static XEditorTable CreateTable(TreeViewState state, MultiColumnHeaderState mchs, bool enabelSelectedObject = false)
         {
-            return new EditorTable(state, mchs, enabelSelectedObject);
+            return new XEditorTable(state, mchs, enabelSelectedObject);
         }
 
         private TreeViewItem m_RootItem;
-        private System.Action<List<IEditorTableItemInfo>> m_OnSelectionChanged;
-        private System.Action<IEditorTableItemInfo> m_OnSingleClickedItem;
-        private System.Action<IEditorTableItemInfo> m_OnDoubleClickedItem;
+        private System.Action<List<XIEditorTableItemInfo>> m_OnSelectionChanged;
+        private System.Action<XIEditorTableItemInfo> m_OnSingleClickedItem;
+        private System.Action<XIEditorTableItemInfo> m_OnDoubleClickedItem;
         private bool m_SelectedObjects;
         public bool showIcon = true;
 
-        public System.Action<List<IEditorTableItemInfo>> OnSelectionChanged { set { m_OnSelectionChanged = value; } }
-        public System.Action<IEditorTableItemInfo> OnSingleClickedItem { set { m_OnSingleClickedItem = value; } }
-        public System.Action<IEditorTableItemInfo> OnDoubleClickedItem { set { m_OnDoubleClickedItem = value; } }
+        public System.Action<List<XIEditorTableItemInfo>> OnSelectionChanged { set { m_OnSelectionChanged = value; } }
+        public System.Action<XIEditorTableItemInfo> OnSingleClickedItem { set { m_OnSingleClickedItem = value; } }
+        public System.Action<XIEditorTableItemInfo> OnDoubleClickedItem { set { m_OnDoubleClickedItem = value; } }
 
-        public EditorTable(TreeViewState state, MultiColumnHeaderState mchs, bool selectedObjects = false) : base(state, new MultiColumnHeader(mchs))
+        public XEditorTable(TreeViewState state, MultiColumnHeaderState mchs, bool selectedObjects = false) : base(state, new MultiColumnHeader(mchs))
         {
             showBorder = true;
             m_SelectedObjects = selectedObjects;
             showAlternatingRowBackgrounds = true;
             multiColumnHeader.sortingChanged += OnSortingChanged;
-            m_RootItem = new EditorTableItem();
+            m_RootItem = new XEditorTableItem();
             m_RootItem.children = new List<TreeViewItem>();
         }
 
@@ -73,7 +73,7 @@ namespace XCommon.Editor
             m_SelectedObjects = flag;
         }
 
-        public void UpdateSelection(IEnumerable<IEditorTableItemInfo> list)
+        public void UpdateSelection(IEnumerable<XIEditorTableItemInfo> list)
         {
             var selected = new List<int>();
             foreach (var info in list)
@@ -88,7 +88,7 @@ namespace XCommon.Editor
             SetSelection(selected, TreeViewSelectionOptions.FireSelectionChanged);
         }
 
-        public void UpdateInfoList(IEnumerable<IEditorTableItemInfo> list)
+        public void UpdateInfoList(IEnumerable<XIEditorTableItemInfo> list)
         {
             m_RootItem.children.Clear();
             AddInfoList(m_RootItem, list);
@@ -96,19 +96,19 @@ namespace XCommon.Editor
             Reload();
         }
 
-        public void AddInfo(IEditorTableItemInfo info)
+        public void AddInfo(XIEditorTableItemInfo info)
         {
-            m_RootItem.AddChild(new EditorTableItem(info, m_RootItem.depth + 1));
+            m_RootItem.AddChild(new XEditorTableItem(info, m_RootItem.depth + 1));
             Reload();
         }
 
-        private void AddInfoList(TreeViewItem rootItem, IEnumerable<IEditorTableItemInfo> list)
+        private void AddInfoList(TreeViewItem rootItem, IEnumerable<XIEditorTableItemInfo> list)
         {
             if (list != null)
             {
                 foreach (var info in list)
                 {
-                    var child = new EditorTableItem(info, rootItem.depth + 1);
+                    var child = new XEditorTableItem(info, rootItem.depth + 1);
                     child.icon = info.assetIcon;
                     rootItem.AddChild(child);
                     if (info.children != null && info.children.Count > 0)
@@ -143,7 +143,7 @@ namespace XCommon.Editor
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            var item = args.item as EditorTableItem;
+            var item = args.item as XEditorTableItem;
             for (int i = 0; i < args.GetNumVisibleColumns(); i++)
             {
                 CellGUI(args.GetCellRect(i), item, args.GetColumn(i), ref args);
@@ -154,10 +154,10 @@ namespace XCommon.Editor
         {
             if (selectedIds == null) return;
             List<Object> selectedObjects = new List<Object>();
-            List<IEditorTableItemInfo> selectedInfo = new List<IEditorTableItemInfo>();
+            List<XIEditorTableItemInfo> selectedInfo = new List<XIEditorTableItemInfo>();
             foreach (var id in selectedIds)
             {
-                var item = FindItem(id, rootItem) as EditorTableItem;
+                var item = FindItem(id, rootItem) as XEditorTableItem;
                 if (item != null)
                 {
                     if (m_SelectedObjects)
@@ -179,17 +179,17 @@ namespace XCommon.Editor
 
         protected override void SingleClickedItem(int id)
         {
-            var item = FindItem(id, rootItem) as EditorTableItem;
+            var item = FindItem(id, rootItem) as XEditorTableItem;
             m_OnSingleClickedItem?.Invoke(item.Info);
         }
 
         protected override void DoubleClickedItem(int id)
         {
-            var item = FindItem(id, rootItem) as EditorTableItem;
+            var item = FindItem(id, rootItem) as XEditorTableItem;
             m_OnDoubleClickedItem?.Invoke(item.Info);
         }
 
-        private void CellGUI(Rect cellRect, EditorTableItem item, int column, ref RowGUIArgs args)
+        private void CellGUI(Rect cellRect, XEditorTableItem item, int column, ref RowGUIArgs args)
         {
             CenterRectUsingSingleLineHeight(ref cellRect);
             if (column == 0)
@@ -243,16 +243,16 @@ namespace XCommon.Editor
         {
             var sortedColumns = multiColumnHeader.state.sortedColumns;
             if (sortedColumns.Length == 0) return;
-            var abList = new List<EditorTableItem>();
+            var abList = new List<XEditorTableItem>();
             foreach (var item in rootItem.children)
             {
-                abList.Add(item as EditorTableItem);
+                abList.Add(item as XEditorTableItem);
             }
             var orderedItems = InitialOrder(abList, sortedColumns);
             rootItem.children = orderedItems.Cast<TreeViewItem>().ToList();
         }
 
-        IOrderedEnumerable<EditorTableItem> InitialOrder(IEnumerable<EditorTableItem> myTypes, int[] columnList)
+        IOrderedEnumerable<XEditorTableItem> InitialOrder(IEnumerable<XEditorTableItem> myTypes, int[] columnList)
         {
             bool ascending = multiColumnHeader.IsSortedAscending(columnList[0]);
             return myTypes.Order(l => l.Info.GetColumnOrder(columnList[0]), ascending);

@@ -7,7 +7,7 @@ namespace XRemoteDebug
     internal class HierarchyPanel : IRemoteDebugPanel
     {
         private RemoteDebugWindow m_Window;
-        private EditorTable m_ClientObjectsTree;
+        private XEditorTable m_ClientObjectsTree;
 
         public HierarchyPanel(RemoteDebugWindow window)
         {
@@ -51,7 +51,7 @@ namespace XRemoteDebug
         {
             if (m_ClientObjectsTree != null) return;
             var column = HierarchyItemInfo.totalColumn;
-            m_ClientObjectsTree = EditorTable.CreateTable(column);
+            m_ClientObjectsTree = XEditorTable.CreateTable(column);
             for (int i = 0; i < column; i++)
             {
                 m_ClientObjectsTree.SetColumnHeader(i, HierarchyItemInfo.GetColumnHeader(i));
@@ -60,7 +60,7 @@ namespace XRemoteDebug
             m_ClientObjectsTree.Reload();
         }
 
-        private void OnSelectedClientObjectList(List<IEditorTableItemInfo> infoList)
+        private void OnSelectedClientObjectList(List<XIEditorTableItemInfo> infoList)
         {
             if (infoList.Count > 0)
             {
